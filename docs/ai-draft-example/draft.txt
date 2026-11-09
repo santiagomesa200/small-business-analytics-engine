@@ -1,0 +1,9 @@
+Gross margin was 42.0% in 2025-01, 41.0% in 2025-03 and 40.0% in 2025-06, but the 2025-04 and 2025-05 figures and the change from first to last month were not computed [gross_margin].
+
+Revenue rose from $1,089,850 in the base period to $1,177,175 in the current period, a total change of $87,325, made up of a $24,125 price effect and a $63,200 volume effect [price_volume].
+
+DSO was 44.8 days, while DPO, DIO and the cash conversion cycle were not computed [working_capital].
+
+Cash fell from an opening $586,000 to an ending $412,300, with average monthly net burn of $57,900, leaving a runway of 7.1 months [cash_runway].
+
+The valuation range from an EBITDA multiple was not computed because the 2025-04 column is missing from the monthly P&L [valuation].

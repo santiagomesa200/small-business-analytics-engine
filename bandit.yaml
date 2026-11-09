@@ -1,0 +1,3 @@
+# B404/B603: subprocess is used only with fixed argument lists (pytest, Chrome), never with a shell or user input.
+skips: [B404, B603]
+exclude_dirs: [.venv, tests]

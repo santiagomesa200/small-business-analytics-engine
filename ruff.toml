@@ -1,0 +1,10 @@
+line-length = 140
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "RUF100"]
+ignore = ["E501", "E731", "S101"]  # long lines are checked by the formatter; the lambda helpers and asserts in tests are deliberate
+
+[lint.per-file-ignores]
+"tests/*" = ["S"]
+"scripts/*" = ["E402"]  # they put the repo root on sys.path before importing the engine

@@ -1,0 +1,16 @@
+# Tests and checks run by `make check` and CI. Exact versions, installed on top of requirements.txt.
+-r requirements.txt
+iniconfig==2.3.1
+packaging==26.3
+pluggy==1.7.0
+Pygments==2.21.0
+pytest==9.2.0
+ruff==0.17.4
+mypy==2.4.1
+pandas-stubs==3.1.0.261029
+types-openpyxl==3.1.5.20261017
+pytest-cov==7.1.0
+coverage==7.17.2
+hypothesis==6.170.15
+bandit==1.9.4
+pip-audit==2.10.1

@@ -1,0 +1,3 @@
+Verifier result: FAIL - summary blocked
+- number $31,000 is not a figure of price_volume: 'Revenue changed by $87,325 between the first and second half...'
+- number 44.8 days is not a figure of cash_runway: 'Cash fell from $586,000 to $412,300, burning about $57,900 a...'

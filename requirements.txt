@@ -1,0 +1,8 @@
+# Python 3.12 or newer. Exact versions this repo is tested with. Runtime only; checks and tests are in requirements-dev.txt.
+et_xmlfile==2.0.0
+numpy==2.5.4
+openpyxl==3.1.5
+pandas==3.1.1
+pypdf==7.0.0
+python-dateutil==4.0.0
+tzdata==2026.6

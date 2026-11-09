@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Small Business Analytics Engine</title>
+<meta name="description" content="An analysis engine for a small company's messy files: plain code reads and computes, AI can draft the summary, and a separate checker blocks any number that does not match. Plus an AI license and access reconciler. Synthetic data, by Santiago Mesa Rodriguez.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Small Business Analytics Engine">
+<meta property="og:description" content="An analysis engine for a small company's messy files: plain code reads and computes, AI can draft the summary, and a separate checker blocks any number that does not match. Plus an AI license and access reconciler. Synthetic data, by Santiago Mesa Rodriguez.">
+<meta property="og:image" content="https://santiagomesa200.github.io/small-business-analytics-engine/site-hero.png">
+<meta property="og:url" content="https://santiagomesa200.github.io/small-business-analytics-engine/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314284b'/%3E%3Cpath d='M4 16H12M20 16H28' stroke='%234fd18b' stroke-width='3'/%3E%3Crect x='12' y='10' width='8' height='12' fill='none' stroke='%23f7f4ea' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+@font-face{font-family:'IBM Plex Sans';font-weight:400;font-display:swap;src:url(fonts/IBMPlexSans-Regular.ttf) format('truetype')}
+@font-face{font-family:'IBM Plex Sans';font-weight:500;font-display:swap;src:url(fonts/IBMPlexSans-Medium.ttf) format('truetype')}
+@font-face{font-family:'IBM Plex Sans';font-weight:600;font-display:swap;src:url(fonts/IBMPlexSans-SemiBold.ttf) format('truetype')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400 500;font-display:swap;src:url(fonts/IBMPlexMono-Regular.ttf) format('truetype')}
+:root{
+  --paper:#ece7d6; --sheet:#f7f4ea; --grid:rgba(20,40,75,.07);
+  --ink:#14284b; --ink2:#3b4d70; --hair:rgba(20,40,75,.6); --hair2:rgba(20,40,75,.24);
+  --on:#0a7540; --on-bg:rgba(10,117,64,.1); --trip:#be3419; --trip-bg:rgba(190,52,25,.09);
+  --amber:#7d4f00; --amber-line:#c88a00; --amber-bg:rgba(200,138,0,.14);
+  --focus:#1d4fbf; --sel-bg:#0a7540; --sel-fg:#fff;
+  --out:cubic-bezier(.16,1,.3,1);--sh:0 1px 0 var(--hair2);
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --cond:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#071530; --sheet:#0c2147; --grid:rgba(160,195,255,.07);
+  --ink:#d9e6ff; --ink2:#a3b9e3; --hair:rgba(190,215,255,.6); --hair2:rgba(190,215,255,.24);
+  --on:#4fd18b; --on-bg:rgba(79,209,139,.12); --trip:#ff8465; --trip-bg:rgba(255,132,101,.11);
+  --amber:#f2bb52; --amber-line:#f2bb52; --amber-bg:rgba(242,187,82,.13);
+  --focus:#9cc4ff; --sel-bg:#4fd18b; --sel-fg:#04210f; --sh:none;}}
+:root[data-theme="dark"]{
+  --paper:#071530; --sheet:#0c2147; --grid:rgba(160,195,255,.07);
+  --ink:#d9e6ff; --ink2:#a3b9e3; --hair:rgba(190,215,255,.6); --hair2:rgba(190,215,255,.24);
+  --on:#4fd18b; --on-bg:rgba(79,209,139,.12); --trip:#ff8465; --trip-bg:rgba(255,132,101,.11);
+  --amber:#f2bb52; --amber-line:#f2bb52; --amber-bg:rgba(242,187,82,.13);
+  --focus:#9cc4ff; --sel-bg:#4fd18b; --sel-fg:#04210f; --sh:none;}
+
+*{box-sizing:border-box}
+html{color-scheme:light dark;scrollbar-color:var(--ink2) var(--paper);scrollbar-width:thin;-webkit-text-size-adjust:100%}
+:root[data-theme="dark"]{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+::selection{background:var(--sel-bg);color:var(--sel-fg)}
+::-webkit-scrollbar{width:12px;height:12px}::-webkit-scrollbar-track{background:var(--paper)}
+::-webkit-scrollbar-thumb{background:var(--ink2);border:3px solid var(--paper);border-radius:8px}
+a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:.2em;text-decoration-color:var(--ink2)}
+a:not(.btn):hover{text-decoration-color:var(--on);color:var(--on)}
+:where(a,button,.stage):focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:2px}
+.stage:focus-visible{outline:none}
+.stage:focus-visible .hit{stroke:var(--focus);stroke-width:2;stroke-dasharray:5 4}
+.dl{font:600 12.5px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase}#eng-key{white-space:nowrap}
+.mono,code,pre{font-family:var(--mono)}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--sheet);padding:8px 12px;z-index:9}
+.skip:focus{left:8px}
+
+main{max-width:1360px;margin:0 auto;padding:28px 20px 56px}
+.sheet{position:relative;margin:0 0 36px;padding-bottom:8px!important;background-color:var(--sheet);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;border:1.5px solid var(--hair);padding:30px 44px 0;
+  box-shadow:var(--sh)}
+.sheet::before{content:"";position:absolute;inset:7px;border:1px solid var(--hair2);pointer-events:none}
+.sheet>*{position:relative}
+h1,h2,h3{font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.012em}
+h1{font-size:clamp(1.75rem,2.9vw,2.5rem);line-height:1.12;max-width:44ch}
+h2{font-size:clamp(1.45rem,2.2vw,1.9rem);line-height:1.18;max-width:28ch}
+h3{font:600 14px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin:0 0 10px}
+p{margin:0}
+.lede{max-width:72ch;color:var(--ink2);margin-top:10px}
+.sheet-head{display:grid;gap:10px;margin-bottom:22px}
+
+/* hero */
+.sheet>*{min-width:0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px 48px;align-items:start}
+.dindex{border:1.5px solid var(--hair);background:var(--sheet);font-size:14.5px}
+.dindex h2{font:600 12.5px/1.2 var(--cond);letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;border-bottom:1.5px solid var(--hair);margin:0;max-width:none;color:var(--ink2)}
+.dindex ol{list-style:none;margin:0;padding:0}
+.dindex li{display:grid;grid-template-columns:44px 1fr;border-bottom:1px solid var(--hair2)}.dindex li:last-child{border-bottom:0}
+.dindex .sn{font:500 13px var(--mono);padding:7px 12px;border-right:1px solid var(--hair2);color:var(--ink2)}
+.dindex a{padding:7px 12px;text-decoration:none;display:block;line-height:1.35}
+.dindex a:hover{background:var(--ink);color:var(--sheet)}
+.hero-top{display:flex;gap:18px 32px;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;margin-top:18px}
+.legend{list-style:none;margin:14px 0 0;padding:10px 14px;border:1px solid var(--hair);background:var(--sheet);display:flex;flex-wrap:wrap;gap:8px 26px;font-size:13.5px;color:var(--ink2);align-items:center}
+.legend .lt{font:600 12.5px var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend svg{flex:none;overflow:visible}
+.legend .ink{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-linecap:round}
+.author{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:12px;font-size:15px;align-items:center}
+.author b{font-weight:600}
+.author a.primary{font-weight:600}
+.feeder{display:flex;align-items:center;gap:12px}
+.switch{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--hair);background:var(--sheet);padding:3px;border-radius:3px}
+.switch .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--ink);border-radius:2px;transition:transform .55s var(--out)}
+.switch[data-co="clean"] .thumb{transform:translateX(100%)}
+.switch button{position:relative;appearance:none;background:none;border:0;font:600 13px/1 var(--cond);letter-spacing:.07em;text-transform:uppercase;color:var(--ink);padding:11px 16px;min-width:140px;cursor:pointer;transition:color .3s var(--out)}
+.switch button[aria-pressed="true"]{color:var(--sheet)}
+.switch button:hover:not([aria-pressed="true"]){text-decoration:underline;text-underline-offset:.3em}
+.dwrap{position:relative;margin-top:6px}
+svg text{font-family:var(--cond);fill:var(--ink)}
+.diagram{display:block;width:100%;height:auto;overflow:visible}
+.diagram .nm{font-weight:600;font-size:13.5px;letter-spacing:.08em;text-anchor:middle}
+.diagram .num{font:500 24px var(--mono);text-anchor:middle}
+.diagram .sub{font-weight:500;font-size:12px;letter-spacing:.07em;text-anchor:middle;fill:var(--ink2)}
+.diagram .base{fill:none;stroke:var(--hair);stroke-width:1.5}
+.diagram .live{fill:none;stroke:var(--on);stroke-width:3.5;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .7s var(--out)}
+.diagram .live.on{stroke-dashoffset:0}
+.resetting .live{transition:none!important}
+.node{fill:var(--sheet);stroke:var(--ink);stroke-width:1.6;transition:stroke .5s var(--out),fill .5s var(--out)}
+.node[data-state="on"]{stroke:var(--on);fill:var(--on-bg)}
+.node[data-state="trip"]{stroke:var(--trip);fill:var(--trip-bg)}
+.ink{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round}
+.xmark{fill:none;stroke:var(--ink);stroke-width:2;transition:stroke .5s var(--out)}
+[data-state="on"]~.xmark,.xmark[data-state="on"]{stroke:var(--on)}
+.xmark[data-state="trip"]{stroke:var(--trip)}
+.hit{fill:transparent;stroke:transparent}
+.stage{cursor:pointer}
+.stage:hover .node,.stage[aria-expanded="true"] .node{stroke-width:2.6}
+.bub{fill:var(--sheet);stroke:var(--ink);stroke-width:1.2}
+.bubt{font:500 12px var(--mono);text-anchor:middle;fill:var(--ink)}
+.stage[aria-expanded="true"] .bub{fill:var(--ink)}
+.stage[aria-expanded="true"] .bubt{fill:var(--sheet)}
+.held-line{fill:none;stroke:var(--trip);stroke-width:2;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .6s var(--out) .85s}
+.held-box{fill:var(--trip-bg);stroke:var(--trip);stroke-width:1.4;stroke-dasharray:5 3}
+.held-t{font:500 18px var(--mono);fill:var(--trip);text-anchor:end}
+.held-s{font-weight:600;font-size:12px;letter-spacing:.08em;fill:var(--trip);text-anchor:end}
+.trip-glyph{fill:var(--trip);transform-box:fill-box;transform-origin:50% 0}
+.is-clean .held{opacity:0}.is-messy .held{opacity:1}
+.is-messy .held-line{stroke-dashoffset:0}
+.held{transition:opacity .3s}
+.is-messy .trip-glyph.kick{animation:kick .42s var(--out)}
+@keyframes kick{from{transform:translateY(-12px) rotate(-24deg);opacity:0}to{transform:none;opacity:1}}
+.mini{stroke-width:1.6;stroke:var(--ink);fill:var(--sheet);transition:fill .5s var(--out),stroke .5s var(--out)}
+.mini[data-state="computed"]{fill:var(--on);stroke:var(--on)}
+.mini[data-state="partial"]{fill:url(#half);stroke:var(--on)}
+.mini[data-state="blocked"]{fill:var(--trip-bg);stroke:var(--trip)}
+.leg{font-weight:500;font-size:12px;letter-spacing:.07em;text-anchor:end;fill:var(--ink2)}
+.vert{display:none;max-width:460px;margin:0 auto}
+.vert .num,.vert .sub{text-anchor:start}
+.hint{color:var(--ink2);font-size:14px;margin-top:0}
+.ldot{stroke-width:1.5;stroke:var(--ink);fill:var(--sheet)}
+
+/* callout */
+.callout{margin-top:26px;border:1px solid var(--hair);background:var(--sheet);padding:20px 24px 22px;position:relative;scroll-margin-bottom:20px}
+.callout[hidden]{display:none}
+.callout-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.callout-head h2{margin:0;font:600 15px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;max-width:none}
+.bubble{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.2px solid var(--ink);font:500 12px var(--mono);flex:none}
+.close{margin-left:auto;appearance:none;background:none;border:1px solid var(--hair2);color:var(--ink);font:600 12.5px var(--cond);letter-spacing:.07em;text-transform:uppercase;padding:6px 12px;cursor:pointer;border-radius:2px}
+.close:hover{border-color:var(--ink)}
+.callout-body{display:grid;gap:14px;font-size:15px;max-width:100ch}
+.callout-body .big{font-size:16px}
+.leader{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.leader path,.leader line{stroke:var(--ink);stroke-width:1.2;fill:none}
+.leader circle{fill:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12.5px var(--mono);border:1px solid var(--hair2);padding:3px 8px;border-radius:2px;background:var(--sheet)}
+.chip.trip{border-color:var(--trip);color:var(--trip);background:var(--trip-bg)}
+.chip.on{border-color:var(--on);color:var(--on);background:var(--on-bg)}
+.chip.partial{border-color:var(--amber-line);color:var(--amber);background:var(--amber-bg)}
+.group{border-top:1px solid var(--hair2);padding-top:12px;display:grid;gap:8px}
+.group:first-child{border-top:0;padding-top:0}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:0}
+.kv dt{color:var(--ink2)}.kv dd{margin:0}
+.src{font-size:14px;line-height:1.5;color:var(--ink2)}
+.alist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.alist li{display:grid;gap:3px}
+.metrics{font:400 13.5px/1.5 var(--mono);color:var(--ink)}
+.cite{font:500 12px var(--mono);color:var(--ink2);border:1px solid var(--hair2);padding:0 5px;border-radius:2px;white-space:nowrap}
+.summary{font-size:15.5px;line-height:1.7}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px}
+a.btn{display:inline-block;border:1px solid var(--ink);padding:9px 16px;font:600 13px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;text-decoration:none;color:var(--ink);background:var(--sheet);transition:background .25s var(--out),color .25s var(--out)}
+a.btn:hover{background:var(--ink);color:var(--sheet)}
+a.btn.solid{background:var(--ink);color:var(--sheet)}
+a.btn.solid:hover{background:var(--on);border-color:var(--on);color:var(--sel-fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) a.btn.solid:hover{color:#04210f}}
+
+/* sheet 2 */
+.two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:start}
+.panel-t{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px solid var(--hair);padding-bottom:6px;margin-bottom:12px}
+.panel-t h3{margin:0;color:var(--ink)}
+.scrollx{overflow-x:auto;padding-top:12px}
+table.pnl{border-collapse:collapse;width:100%;font:400 12px/1.3 var(--mono);min-width:520px}
+.pnl th,.pnl td{border:1px solid var(--hair2);padding:6px 6px;text-align:right;position:relative;white-space:nowrap}
+.pnl th:first-child,.pnl td:first-child{text-align:left;font-family:var(--sans);font-size:13.5px}
+.pnl th{font-weight:500;background:var(--on-bg);color:var(--ink)}
+.pnl td.trip{outline:2px solid var(--trip);outline-offset:-2px;color:var(--trip);font-weight:500}
+.pnl .absent{border:1.5px dashed var(--trip)}
+.pnl tr.gone th,.pnl tr.gone td{border:1.5px dashed var(--trip);color:var(--trip);text-align:left;font-family:var(--sans)}
+.pnl th.absent{color:var(--trip)}
+.pnl td.fixed{box-shadow:inset 0 -2px 0 var(--amber-line)}
+.pnl .pin{position:absolute;top:-15px;right:-19px;z-index:2;width:22px;height:21px;color:var(--ink)}
+.pin svg{display:block;overflow:visible}.pin .tri{fill:var(--sheet);stroke:var(--trip);stroke-width:1.5}.pin text{font:500 12px var(--mono);text-anchor:middle;fill:var(--ink)}
+.pnl .pin.c{border-radius:50%;border:1.2px solid var(--ink);background:var(--sheet);font:500 12px/19px var(--mono);text-align:center;width:21px;height:21px}
+.pnl.stack{min-width:0}.pnl.stack .pin{right:3px;top:-11px}.pnl.stack tr.gone th{position:relative}.pnl.stack tr.gone .pin{top:4px;right:6px}.pnl.stack th.mh{background:var(--on-bg);text-align:left;font-family:var(--sans);font-weight:600}
+.dnotes{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;font-size:14.5px}
+.dnotes li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.dnotes .bubble{margin-top:1px}.dtri{display:block}.dtri svg{width:26px;height:25px}.dtri .tri{fill:var(--sheet);stroke:var(--trip);stroke-width:1.5}.dtri text{font:500 12px var(--mono);text-anchor:middle;fill:var(--ink)}
+.dnotes .fx{color:var(--amber)}
+.report-mini{border:1px solid var(--hair);padding:16px 18px;background:var(--sheet);display:grid;gap:14px}
+.report-mini .line{font:500 13.5px/1.5 var(--mono)}
+.report-mini .line .t{color:var(--trip)}.report-mini .line .g{color:var(--on)}
+.attn{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14.5px}
+.attn li{display:grid;grid-template-columns:26px 1fr;gap:10px}
+.attn.none li{display:block}
+.attn-box{border:1px solid var(--trip);background:var(--trip-bg);padding:12px 14px;display:grid;gap:10px}
+.attn-box.ok{border-color:var(--on);background:var(--on-bg)}
+.attn-box h4{margin:0;font:600 13px var(--cond);letter-spacing:.07em;text-transform:uppercase}
+
+/* sheet 3 */
+.stamp{display:inline-block;border:2px solid var(--trip);color:var(--trip);font:600 15px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;padding:8px 14px}
+.draft{border:1px solid var(--hair);background:var(--sheet);padding:20px 22px;font-size:15.5px;line-height:1.85}
+.wrong{color:var(--trip);text-decoration:line-through;text-decoration-thickness:2px;font-family:var(--mono);font-size:.94em;background:var(--trip-bg);padding:0 3px}
+.right{color:var(--on);font-family:var(--mono);font-size:.94em;font-weight:500;margin-left:5px;border-bottom:2px solid var(--on)}
+.log{font:400 13px/1.55 var(--mono);background:var(--ink);color:var(--sheet);padding:16px 18px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.log .f{color:#ff9d84}
+:root[data-theme="dark"] .log{background:#04102a;color:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .log{background:#04102a;color:var(--ink)}}
+.rules{list-style:none;counter-reset:r;margin:0;padding:0;display:grid;gap:10px;font-size:14.5px}
+.rules li{display:grid;grid-template-columns:26px 1fr;gap:10px;counter-increment:r}
+.rules li::before{content:counter(r);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.2px solid var(--ink);font:500 12px var(--mono)}
+
+/* sheet 4 */
+.plat{display:block;width:100%;height:auto;min-width:920px;overflow:visible}
+.plat .nm{font-weight:600;font-size:13px;letter-spacing:.08em;text-anchor:middle}
+.plat .cap{font-weight:500;font-size:13px;text-anchor:middle;fill:var(--ink2);letter-spacing:.03em}
+.plat .cap tspan{font-family:inherit;font-weight:600;fill:var(--ink)}
+.plat .tab{font-weight:600;font-size:12.5px;letter-spacing:.1em;fill:var(--ink)}
+.plat .bd{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:9 5}
+.plat .ghost{fill:none;stroke:var(--ink2);stroke-width:1.4;stroke-dasharray:4 4}
+.plat .dim{stroke:var(--ink);stroke-width:1.2;fill:none}
+.plat .on{fill:none;stroke:var(--on);stroke-width:3.5}
+.plat .off{fill:var(--sheet);stroke:var(--ink);stroke-width:1.6}
+.plat .meta{font:500 13.5px var(--sans);fill:var(--ink)}
+.plat .dimt{font-weight:600;font-size:12.5px;letter-spacing:.07em;text-anchor:middle}
+.plat-v,.lic-v{display:none}
+.vbus{display:block;max-width:460px;margin:0 auto;height:auto}
+.vbus .nm,.vbus .num,.vbus .sub,.vbus .cap{text-anchor:start}
+.vbus .nm{font-weight:600;font-size:13.5px;letter-spacing:.08em}.vbus .num{font:500 18px var(--mono)}.vbus .cap{font-weight:500;font-size:12.5px;fill:var(--ink2)}
+.vbus .bd{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-dasharray:9 5}
+.vbus .tab{font-weight:600;font-size:12.5px;letter-spacing:.1em;fill:var(--ink);text-anchor:end}
+.vbus .ghost{fill:none;stroke:var(--ink2);stroke-width:1.4;stroke-dasharray:4 4}
+.vbus .dimt{font-weight:600;font-size:12px;letter-spacing:.07em;text-anchor:middle;fill:var(--ink)}
+.vbus .off{fill:var(--sheet);stroke:var(--ink);stroke-width:1.6}
+.ft{border-collapse:collapse;width:100%;font-size:14.5px;table-layout:fixed}
+.ft th{text-align:left;font:600 12.5px var(--cond);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);border-bottom:1.5px solid var(--hair);padding:6px 10px}
+.ft td{border-bottom:1px solid var(--hair2);padding:9px 10px;vertical-align:top}
+.ft .n{text-align:right;font-family:var(--mono);white-space:nowrap}.ft .s{font:400 12.5px/1.45 var(--mono);color:var(--ink2);overflow-wrap:anywhere}
+.ft col.c1{width:27%}.ft col.c2{width:7%}.ft col.c3{width:18%}.ft col.c4{width:15%}
+.savings{margin:16px 0 0;font-size:15.5px;max-width:84ch}
+.trace{list-style:none;margin:0;padding:0;counter-reset:t}
+.trace li{display:grid;grid-template-columns:28px 1fr;gap:12px;position:relative;padding-bottom:18px;counter-increment:t}
+.trace li::before{content:counter(t);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.2px solid var(--ink);font:500 12px var(--mono);background:var(--sheet);position:relative;z-index:1}
+.trace li:not(:last-child)::after{content:"";position:absolute;left:13px;top:28px;bottom:0;width:1px;background:var(--hair)}
+.trace .st{font:600 12.5px var(--cond);letter-spacing:.08em;text-transform:uppercase}.trace .fl{font:400 12.5px var(--mono);color:var(--ink2);margin-left:8px}
+.trace p{margin:2px 0 0;font-size:14.5px;line-height:1.55;overflow-wrap:anywhere}
+.fn{font-size:13.5px;color:var(--ink2);margin-top:20px;max-width:100ch;overflow-wrap:anywhere}
+.measure{margin:6px 0 0;padding-left:1.1em}.measure li{margin:0 0 4px}
+.lic-notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 44px;margin-top:26px}
+
+/* sheet 5 */
+.notes3{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:44px;align-items:start}
+.nlist{list-style:none;margin:0;padding:0;display:grid;gap:18px;counter-reset:n}
+.nlist li{display:grid;grid-template-columns:28px 1fr;gap:12px;counter-increment:n}
+.nlist li::before{content:counter(n);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.2px solid var(--ink);font:500 12px var(--mono);margin-top:2px}
+.nlist b{font-weight:600}
+pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);padding:14px 16px;font-size:13px;line-height:1.7;overflow-x:auto}
+.side{display:grid;gap:26px}
+.not li{margin:0 0 6px}
+.not{margin:0;padding-left:1.1em}
+
+/* title block */
+.tbwrap{display:flex;justify-content:flex-end;margin:36px -36px 0}
+.tb{width:min(640px,100%);margin:0;display:grid;grid-template-columns:1.4fr 1.4fr .8fr .8fr;border-top:1.5px solid var(--hair);border-left:1.5px solid var(--hair);background:var(--sheet)}
+.tb>div{border-right:1.5px solid var(--hair);border-bottom:1.5px solid var(--hair);padding:7px 10px 8px;min-width:0}
+.tb span{display:block;font:500 12px/1.2 var(--cond);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.tb b{display:block;font:600 13px/1.35 var(--cond);letter-spacing:.05em;text-transform:uppercase;overflow-wrap:anywhere}
+.tb .w2{grid-column:span 2}
+.tb .pass{color:var(--on)}.tb .fail{color:var(--trip)}.tb .who{color:var(--ink)}
+.tb .sheetno{font-family:var(--mono);letter-spacing:0}
+
+@media (max-width:1100px){.lic-notes{grid-template-columns:minmax(0,1fr)}.sheet{padding:26px 28px 0}.tbwrap{margin:36px -20px 0}.two,.notes3{grid-template-columns:minmax(0,1fr);gap:34px}}
+@media (max-width:900px){
+  .diagram.horiz{display:none}.vert{display:block}
+  .plat-h{display:none}.plat-v,.lic-v{display:block}
+  .leader{display:none}
+  .hero-top{align-items:flex-start}
+  .hero-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  main{padding:14px 12px 28px}
+  body{font-size:16px}
+  .sheet{padding:22px 18px 0;margin-bottom:26px}
+  .sheet::before{inset:5px}
+  .switch{width:100%}.switch button{min-width:0;padding:13px 8px}
+  .feeder{width:100%;flex-direction:column;align-items:stretch;gap:6px}
+  .tbwrap{margin:28px -10px 0}
+  .tb{width:100%;grid-template-columns:1fr 1fr}
+  .tb .w2{grid-column:span 2}
+  .callout{padding:16px 16px 18px}
+  .kv{grid-template-columns:1fr}
+  .ft,.ft tbody,.ft tr,.ft td{display:block}.ft thead,.ft col{display:none}.ft tr{border-bottom:1px solid var(--hair);padding:8px 0}.ft td{border:0;padding:2px 10px}.ft .n{text-align:left}
+  .lic-notes{grid-template-columns:minmax(0,1fr)}.ft td[data-label]::before{content:attr(data-label) ': ';color:var(--ink2);font-family:var(--sans)}
+  .author{flex-direction:column;align-items:flex-start;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="half" x1="0" x2="1" y1="0" y2="0"><stop offset=".5" stop-color="var(--on)"/><stop offset=".5" stop-color="var(--trip)"/></linearGradient></defs></svg>
+<a class="skip" href="#sheet-2">Skip to the before and after</a>
+<main>
+
+<!-- SHEET 1 -->
+<section class="sheet" id="sheet-1" aria-labelledby="h-1">
+  <div class="hero-grid">
+    <div class="sheet-head" style="margin:0">
+      <h1 id="h-1">Messy files in, checked analyses out.</h1>
+      <p class="lede">Plain code reads the files and does the arithmetic, AI can draft the summary, and a separate checker compares the numbers in the draft with the computed figures and blocks the summary if one does not match. A from-scratch rebuild, on synthetic data, of part of the platform I built at StepUp &amp; Company. Switch the company, then select any numbered stage to see its real data.</p>
+      <p class="lede"><b>Why not just give the files to an LLM?</b> A model can give a confident answer when a month is missing or a subtotal is wrong, and nothing in it tells you which numbers to trust. Client work needs every figure traced to its source and every gap flagged, so the split above is how I built it. Before this, a full client report at StepUp took one to two weeks (my estimate).</p>
+      <div class="author">
+        <span><b>Santiago Mesa Rodriguez</b></span>
+        <a href="mailto:santiago.mesarodriguez@duke.edu">santiago.mesarodriguez@duke.edu</a>
+        <a href="https://www.linkedin.com/in/santiago-mesa-rodriguez">linkedin.com/in/santiago-mesa-rodriguez</a>
+        <a class="primary" href="https://github.com/santiagomesa200/small-business-analytics-engine">GitHub repo</a>
+      </div>
+    </div>
+    <nav class="dindex" aria-label="Drawing index">
+      <h2>Drawing index</h2>
+      <ol>
+        <li><span class="sn">1</span><a href="#sheet-1">System one-line</a></li>
+        <li><span class="sn">2</span><a href="#sheet-2">Before and after</a></li>
+        <li><span class="sn">3</span><a href="#sheet-3">The checker</a></li>
+        <li><span class="sn">4</span><a href="#sheet-4">Full platform, one-line</a></li>
+        <li><span class="sn">5</span><a href="#sheet-5">AI license and access reconciler</a></li>
+        <li><span class="sn">6</span><a href="#sheet-6">For engineers</a></li>
+        <li><span class="sn">7</span><a href="#sheet-7">General notes</a></li>
+      </ol>
+    </nav>
+  </div>
+  <div class="hero-top">
+    <div class="feeder" role="group" aria-label="Choose which company the engine runs on">
+      <span class="dl" id="feeder-l">Company</span>
+      <div class="switch" id="switch" data-co="messy">
+        <span class="thumb" aria-hidden="true"></span>
+        <button type="button" data-co="messy" aria-pressed="true">Messy company</button>
+        <button type="button" data-co="clean" aria-pressed="false">Clean company</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dwrap is-messy" id="dwrap">
+    <p class="sr" id="dtext" hidden></p>
+    <!-- desktop one-line -->
+    <svg class="diagram horiz" id="svg-h" viewBox="0 0 1240 296" role="group" aria-label="One-line diagram of the engine. Seven stages in a row, each selectable." aria-describedby="dtext">
+      <!-- sources -->
+      <g>
+        <text class="nm" x="30" y="28">SOURCES</text>
+        <text class="num" data-b="src.n" x="30" y="62"></text><text class="sub" data-b="src.l" x="30" y="80"></text>
+        <path class="ink" d="M6 110H40M6 130H40M6 150H40M6 170H40M6 190H40M40 110V190"/>
+        <path class="base" d="M40 150H190"/>
+        <path class="live on" data-live="0" pathLength="1" d="M40 150H190"/>
+      </g>
+      <!-- segments -->
+      <g>
+        <path class="base" d="M230 150H345M385 150H500M540 150H664M716 150H850M890 150H1004M1056 150H1148"/>
+        <path class="live on" data-live="1" pathLength="1" d="M230 150H345"/>
+        <path class="live on" data-live="2" pathLength="1" d="M385 150H500"/>
+        <path class="live on" data-live="3" pathLength="1" d="M540 150H664"/>
+        <path class="live on" data-live="4" pathLength="1" d="M716 150H850"/>
+        <path class="live on" data-live="5" pathLength="1" d="M890 150H1004"/>
+        <path class="live on" data-live="6" pathLength="1" d="M1056 150H1148"/>
+      </g>
+      <!-- 1 READ -->
+      <g class="stage" data-stage="read" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 1, READ. Show its data.">
+        <rect class="hit" x="140" y="4" width="140" height="184"/>
+        <text class="nm" x="210" y="28">READ</text>
+        <text class="num" data-b="read.n" x="210" y="62"></text><text class="sub" data-b="read.l" x="210" y="80"></text>
+        <path class="ink" d="M210 118V130"/><circle class="bub" cx="210" cy="108" r="10"/><text class="bubt" x="210" y="112">1</text>
+        <rect class="node" data-state="on" x="190" y="130" width="40" height="40"/>
+        <path class="ink" d="M200 160L220 142"/><circle cx="200" cy="160" r="2.5" fill="var(--ink)"/><circle cx="220" cy="142" r="2.5" fill="var(--ink)"/>
+      </g>
+      <!-- 2 NORMALIZE -->
+      <g class="stage" data-stage="norm" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 2, NORMALIZE. Show its data.">
+        <rect class="hit" x="295" y="4" width="140" height="184"/>
+        <text class="nm" x="365" y="28">NORMALIZE</text>
+        <text class="num" data-b="norm.n" x="365" y="62"></text><text class="sub" data-b="norm.l" x="365" y="80"></text>
+        <path class="ink" d="M365 118V130"/><circle class="bub" cx="365" cy="108" r="10"/><text class="bubt" x="365" y="112">2</text>
+        <rect class="node" data-state="on" x="345" y="130" width="40" height="40"/>
+        <path class="ink" d="M355 160L375 142"/><circle cx="355" cy="160" r="2.5" fill="var(--ink)"/><circle cx="375" cy="142" r="2.5" fill="var(--ink)"/>
+      </g>
+      <!-- 3 EXTRACT -->
+      <g class="stage" data-stage="ext" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 3, EXTRACT. Show its data.">
+        <rect class="hit" x="450" y="4" width="140" height="184"/>
+        <text class="nm" x="520" y="28">EXTRACT</text>
+        <text class="num" data-b="ext.n" x="520" y="62"></text><text class="sub" data-b="ext.l" x="520" y="80"></text>
+        <path class="ink" d="M520 118V130"/><circle class="bub" cx="520" cy="108" r="10"/><text class="bubt" x="520" y="112">3</text>
+        <rect class="node" data-state="on" x="500" y="130" width="40" height="40"/>
+        <path class="ink" d="M510 160L530 142"/><circle cx="510" cy="160" r="2.5" fill="var(--ink)"/><circle cx="530" cy="142" r="2.5" fill="var(--ink)"/>
+      </g>
+      <!-- 4 CHECK breaker -->
+      <g class="stage" data-stage="check" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 4, CHECK breaker. Show its data.">
+        <rect class="hit" x="620" y="4" width="140" height="184"/>
+        <text class="nm" x="690" y="28">CHECK</text>
+        <text class="num" data-b="check.n" x="690" y="62"></text><text class="sub" data-b="check.l" x="690" y="80"></text>
+        <path class="ink" d="M690 118V124"/><circle class="bub" cx="690" cy="108" r="10"/><text class="bubt" x="690" y="112">4</text>
+        <rect class="node" id="n-check" data-state="trip" x="664" y="124" width="52" height="52"/>
+        <path class="xmark" id="x-check" data-state="trip" d="M674 134L706 166M706 134L674 166"/>
+        <path class="trip-glyph held" d="M722 114l-9 14h6l-5 15 13-18h-7l5-11z"/>
+      </g>
+      <g class="held">
+        <path class="held-line" pathLength="1" d="M690 176V236"/>
+        <rect class="held-box" x="536" y="236" width="160" height="52"/>
+        <text class="held-t" data-b="check.held" x="688" y="258"></text>
+        <text class="held-s" x="688" y="277">NOT GUESSED</text>
+      </g>
+      <!-- 5 ANALYZE -->
+      <g class="stage" data-stage="ana" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 5, ANALYZE. Show its data.">
+        <rect class="hit" x="760" y="4" width="140" height="184"/>
+        <text class="nm" x="870" y="28">ANALYZE</text>
+        <text class="num" data-b="ana.n" x="870" y="62"></text><text class="sub" data-b="ana.l" x="870" y="80"></text>
+        <path class="ink" d="M870 118V130"/><circle class="bub" cx="870" cy="108" r="10"/><text class="bubt" x="870" y="112">5</text>
+        <rect class="node" data-state="on" x="850" y="130" width="40" height="40"/>
+        <path class="ink" d="M858 142H882M858 150H882M858 158H882"/>
+      </g>
+      <g>
+        <path class="base" d="M870 170V200M770 200H870M780 200V214M800 200V214M820 200V214M840 200V214M860 200V214"/>
+        <circle class="mini" data-mini="0" cx="780" cy="222" r="8"/><circle class="mini" data-mini="1" cx="800" cy="222" r="8"/>
+        <circle class="mini" data-mini="2" cx="820" cy="222" r="8"/><circle class="mini" data-mini="3" cx="840" cy="222" r="8"/>
+        <circle class="mini" data-mini="4" cx="860" cy="222" r="8"/>
+        <text class="leg" data-b="ana.leg1" x="872" y="252"></text><text class="leg" data-b="ana.leg2" x="872" y="268"></text>
+      </g>
+      <!-- 6 VERIFY breaker -->
+      <g class="stage" data-stage="ver" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
+        <rect class="hit" x="960" y="4" width="140" height="184"/>
+        <text class="nm" x="1030" y="28">VERIFY</text>
+        <text class="num" data-b="ver.n" x="1030" y="62"></text><text class="sub" data-b="ver.l" x="1030" y="80"></text>
+        <path class="ink" d="M1030 118V124"/><circle class="bub" cx="1030" cy="108" r="10"/><text class="bubt" x="1030" y="112">6</text>
+        <rect class="node" id="n-ver" data-state="on" x="1004" y="124" width="52" height="52"/>
+        <path class="xmark" id="x-ver" data-state="on" d="M1014 134L1046 166M1046 134L1014 166"/>
+      </g>
+      <!-- 7 REPORT load -->
+      <g class="stage" data-stage="rep" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
+        <rect class="hit" x="1100" y="4" width="140" height="184"/>
+        <text class="nm" x="1170" y="28">REPORT</text>
+        <text class="num" data-b="rep.n" x="1170" y="62"></text><text class="sub" data-b="rep.l" x="1170" y="80"></text>
+        <path class="ink" d="M1170 118V128"/><circle class="bub" cx="1170" cy="108" r="10"/><text class="bubt" x="1170" y="112">7</text>
+        <circle class="node" data-state="on" cx="1170" cy="150" r="22"/>
+        <path class="ink" d="M1162 140h10l5 5v13h-15zM1165 150h9M1165 155h9"/>
+      </g>
+    </svg>
+
+    <!-- mobile vertical bus -->
+    <svg class="diagram vert" id="svg-v" viewBox="0 0 360 700" role="group" aria-label="One-line diagram of the engine, drawn vertically. Seven stages, each selectable." aria-describedby="dtext">
+      <g>
+        <path class="ink" d="M6 14H26M6 24H26M6 34H26M6 44H26M6 54H26M26 14V54"/>
+        <text class="nm" x="70" y="30" style="text-anchor:start">SOURCES</text>
+        <text x="70" y="50" style="text-anchor:start"><tspan class="num" data-b="src.n" style="font-size:18px"></tspan><tspan class="sub" data-b="src.l" dx="6" style="text-anchor:start"></tspan></text>
+        <path class="base" d="M26 34H34V92"/><path class="live on" data-live="0" pathLength="1" d="M26 34H34V92"/>
+      </g>
+      <g class="stage" data-stage="read" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 1, READ. Show its data.">
+        <rect class="hit" x="2" y="92" width="356" height="62"/>
+        <rect class="node" data-state="on" x="14" y="92" width="40" height="40"/><path class="ink" d="M24 122L44 104"/><circle cx="24" cy="122" r="2.5" fill="var(--ink)"/><circle cx="44" cy="104" r="2.5" fill="var(--ink)"/>
+        <text class="nm" x="70" y="108" style="text-anchor:start">READ</text>
+        <text x="70" y="130" style="text-anchor:start"><tspan class="num" data-b="read.n" style="font-size:18px"></tspan><tspan class="sub" data-b="read.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="bub" cx="338" cy="112" r="10"/><text class="bubt" x="338" y="116">1</text>
+      </g>
+      <path class="base" d="M34 132V176"/><path class="live on" data-live="1" pathLength="1" d="M34 132V176"/>
+      <g class="stage" data-stage="norm" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 2, NORMALIZE. Show its data.">
+        <rect class="hit" x="2" y="176" width="356" height="62"/>
+        <rect class="node" data-state="on" x="14" y="176" width="40" height="40"/><path class="ink" d="M24 206L44 188"/><circle cx="24" cy="206" r="2.5" fill="var(--ink)"/><circle cx="44" cy="188" r="2.5" fill="var(--ink)"/>
+        <text class="nm" x="70" y="192" style="text-anchor:start">NORMALIZE</text>
+        <text x="70" y="214" style="text-anchor:start"><tspan class="num" data-b="norm.n" style="font-size:18px"></tspan><tspan class="sub" data-b="norm.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="bub" cx="338" cy="196" r="10"/><text class="bubt" x="338" y="200">2</text>
+      </g>
+      <path class="base" d="M34 216V260"/><path class="live on" data-live="2" pathLength="1" d="M34 216V260"/>
+      <g class="stage" data-stage="ext" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 3, EXTRACT. Show its data.">
+        <rect class="hit" x="2" y="260" width="356" height="62"/>
+        <rect class="node" data-state="on" x="14" y="260" width="40" height="40"/><path class="ink" d="M24 290L44 272"/><circle cx="24" cy="290" r="2.5" fill="var(--ink)"/><circle cx="44" cy="272" r="2.5" fill="var(--ink)"/>
+        <text class="nm" x="70" y="276" style="text-anchor:start">EXTRACT</text>
+        <text x="70" y="298" style="text-anchor:start"><tspan class="num" data-b="ext.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ext.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="bub" cx="338" cy="280" r="10"/><text class="bubt" x="338" y="284">3</text>
+      </g>
+      <path class="base" d="M34 300V338"/><path class="live on" data-live="3" pathLength="1" d="M34 300V338"/>
+      <g class="stage" data-stage="check" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 4, CHECK breaker. Show its data.">
+        <rect class="hit" x="2" y="338" width="356" height="72"/>
+        <rect class="node" data-state="trip" x="8" y="338" width="52" height="52"/><path class="xmark" data-state="trip" d="M18 348L50 380M50 348L18 380"/>
+        <path class="trip-glyph held" d="M64 330l-9 14h6l-5 15 13-18h-7l5-11z"/>
+        <text class="nm" x="76" y="358" style="text-anchor:start">CHECK</text>
+        <text x="76" y="380" style="text-anchor:start"><tspan class="num" data-b="check.n" style="font-size:18px"></tspan><tspan class="sub" data-b="check.l" dx="6" style="text-anchor:start"></tspan></text>
+        <text class="held-s held" data-b="check.heldline" x="76" y="402" style="text-anchor:start"></text>
+        <circle class="bub" cx="338" cy="364" r="10"/><text class="bubt" x="338" y="368">4</text>
+      </g>
+      <path class="base" d="M34 390V440"/><path class="live on" data-live="4" pathLength="1" d="M34 390V440"/>
+      <g class="stage" data-stage="ana" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 5, ANALYZE. Show its data.">
+        <rect class="hit" x="2" y="440" width="356" height="86"/>
+        <rect class="node" data-state="on" x="14" y="440" width="40" height="40"/><path class="ink" d="M22 452H46M22 460H46M22 468H46"/>
+        <text class="nm" x="70" y="456" style="text-anchor:start">ANALYZE</text>
+        <text x="70" y="478" style="text-anchor:start"><tspan class="num" data-b="ana.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ana.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="mini" data-mini="0" cx="78" cy="502" r="8"/><circle class="mini" data-mini="1" cx="102" cy="502" r="8"/><circle class="mini" data-mini="2" cx="126" cy="502" r="8"/><circle class="mini" data-mini="3" cx="150" cy="502" r="8"/><circle class="mini" data-mini="4" cx="174" cy="502" r="8"/>
+        <text class="leg" data-b="ana.legend" x="70" y="526" style="text-anchor:start;font-size:12px"></text>
+        <circle class="bub" cx="338" cy="460" r="10"/><text class="bubt" x="338" y="464">5</text>
+      </g>
+      <path class="base" d="M34 480V560"/><path class="live on" data-live="5" pathLength="1" d="M34 480V560"/>
+      <g class="stage" data-stage="ver" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
+        <rect class="hit" x="2" y="548" width="356" height="62"/>
+        <rect class="node" data-state="on" x="8" y="548" width="52" height="52"/><path class="xmark" data-state="on" d="M18 558L50 590M50 558L18 590"/>
+        <text class="nm" x="76" y="566" style="text-anchor:start">VERIFY</text>
+        <text x="76" y="588" style="text-anchor:start"><tspan class="num" data-b="ver.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ver.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="bub" cx="338" cy="574" r="10"/><text class="bubt" x="338" y="578">6</text>
+      </g>
+      <path class="base" d="M34 600V636"/><path class="live on" data-live="6" pathLength="1" d="M34 600V636"/>
+      <g class="stage" data-stage="rep" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
+        <rect class="hit" x="2" y="636" width="356" height="56"/>
+        <circle class="node" data-state="on" cx="34" cy="660" r="22"/><path class="ink" d="M26 650h10l5 5v13h-15zM29 660h9M29 665h9"/>
+        <text class="nm" x="76" y="654" style="text-anchor:start">REPORT</text>
+        <text x="76" y="676" style="text-anchor:start"><tspan class="num" data-b="rep.n" style="font-size:18px"></tspan><tspan class="sub" data-b="rep.l" dx="6" style="text-anchor:start"></tspan></text>
+        <circle class="bub" cx="338" cy="660" r="10"/><text class="bubt" x="338" y="664">7</text>
+      </g>
+    </svg>
+    <ul class="legend" aria-label="Symbol legend">
+      <li class="lt">Legend</li>
+      <li><svg width="30" height="22" viewBox="0 0 30 22" aria-hidden="true"><path class="ink" d="M2 4H12M2 11H12M2 18H12M12 4V18M12 11H28"/></svg>Source file</li>
+      <li><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="3" width="20" height="20" fill="var(--on-bg)" stroke="var(--on)" stroke-width="1.6"/><path class="ink" d="M8 18L18 8"/></svg>Stage (switch)</li>
+      <li><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" fill="var(--on-bg)" stroke="var(--on)" stroke-width="1.6"/><path d="M8 8L20 20M20 8L8 20" fill="none" stroke="var(--on)" stroke-width="1.8"/></svg>Breaker, closed</li>
+      <li><svg width="32" height="30" viewBox="0 0 32 30" aria-hidden="true"><rect x="3" y="5" width="22" height="22" fill="var(--trip-bg)" stroke="var(--trip)" stroke-width="1.6"/><path d="M8 10L20 22M20 10L8 22" fill="none" stroke="var(--trip)" stroke-width="1.8"/><path d="M28 1l-6 9h4l-3 9 9-12h-5z" fill="var(--trip)"/></svg>Breaker, tripped</li>
+      <li><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="var(--on-bg)" stroke="var(--on)" stroke-width="1.6"/><path class="ink" d="M10 8h6l3 3v9h-9zM12 14h5M12 17h5"/></svg>Load (the report)</li>
+      <li><svg width="30" height="12" viewBox="0 0 30 12" aria-hidden="true"><path d="M1 6H29" stroke="var(--on)" stroke-width="3.5"/></svg>Path that passed</li>
+      <li><svg width="30" height="12" viewBox="0 0 30 12" aria-hidden="true"><path d="M1 6H29" stroke="var(--trip)" stroke-width="2" stroke-dasharray="5 3"/></svg>Held figure</li>
+      <li><svg width="62" height="18" viewBox="0 0 62 18" aria-hidden="true"><circle class="ldot" cx="9" cy="9" r="7" style="fill:var(--on);stroke:var(--on)"/><circle class="ldot" cx="31" cy="9" r="7" style="fill:url(#half);stroke:var(--on)"/><circle class="ldot" cx="53" cy="9" r="7" style="fill:var(--trip-bg);stroke:var(--trip)"/></svg>Analysis: computed, partial, blocked</li>
+    </ul>
+
+    <aside class="callout" id="callout" hidden aria-live="polite" aria-labelledby="co-title">
+      <div class="callout-head"><span class="bubble" id="co-n"></span><h2 id="co-title"></h2><button type="button" class="close" id="co-close">Close</button></div>
+      <div class="callout-body" id="co-body"></div>
+    </aside>
+    <svg class="leader" id="leader" aria-hidden="true"></svg>
+  </div>
+
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>System one-line</b></div><div><span>Dwg no.</span><b>SBAE-001</b></div><div><span>Rev</span><b>A</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">1 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 2 -->
+<section class="sheet" id="sheet-2" aria-labelledby="h-2">
+  <div class="sheet-head">
+    <h2 id="h-2">The owner's P&amp;L, and what the report says about it.</h2>
+    <p class="lede" id="s2-lede"></p>
+  </div>
+  <div class="two">
+    <div>
+      <div class="panel-t"><h3>As the owner sent it</h3><span class="dl" id="s2-file">Monthly P&amp;L</span></div>
+      <div class="scrollx"><div id="grid"></div></div>
+      <ol class="dnotes" id="gridnotes"></ol>
+    </div>
+    <div>
+      <div class="panel-t"><h3>What the report says</h3><span class="dl">Bluebonnet Supply Co.</span></div>
+      <div class="report-mini">
+        <p class="line" id="rm-strip"></p>
+        <div class="attn-box" id="rm-attn"></div>
+        <p class="summary" id="rm-summary"></p>
+        <div class="btnrow"><a class="btn solid" id="rm-open" href="reports/messy.html">Open the full report</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>Before and after</b></div><div><span>Dwg no.</span><b>SBAE-002</b></div><div><span>Rev</span><b>A</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">2 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 3 -->
+<section class="sheet" id="sheet-3" aria-labelledby="h-3">
+  <div class="sheet-head">
+    <h2 id="h-3">The verifier rejects a summary whose numbers do not match.</h2>
+    <p class="lede">The drafter never grades its own work. An independent verifier, which is separate code with fixed rules, checks it. It does not judge wording, and it skips numbers written as words, numbers joined to letters such as Q1, and month labels like 2025-04 (<a href="https://github.com/santiagomesa200/small-business-analytics-engine#decisions-and-tradeoffs">full list</a>). This draft has two numbers I broke on purpose.</p>
+  </div>
+  <div class="two">
+    <div>
+      <div class="panel-t"><h3>The rejected draft</h3><span class="stamp" id="rej-stamp">Summary blocked</span></div>
+      <p class="draft" id="rej-draft"></p>
+      <p class="hint" style="margin-top:10px">Struck through: what the draft said. Underlined: the figure the engine computed for that sentence's analysis.</p>
+    </div>
+    <div style="display:grid;gap:26px">
+      <div><div class="panel-t"><h3>What the checker printed</h3></div><pre class="log" id="rej-log"></pre></div>
+      <div><div class="panel-t"><h3>The six rules, in code</h3></div><ol class="rules" id="rej-rules"></ol></div>
+    </div>
+  </div>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>The checker</b></div><div><span>Dwg no.</span><b>SBAE-003</b></div><div><span>Rev</span><b>A</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="fail" style="font-style:normal">FAIL (example)</i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">3 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 4 -->
+<section class="sheet" id="sheet-4" aria-labelledby="h-4">
+  <div class="sheet-head">
+    <h2 id="h-4">This repo is one slice of a larger system.</h2>
+    <p class="lede">At StepUp &amp; Company, a three-person advisory firm I co-founded, I designed and built the full platform with AI coding tools. It is proprietary, so none of its code, screens or data is here. The dashed boundaries show what I rebuilt from scratch. The numbers about the real platform are self-reported from my own project records.</p>
+  </div>
+  <div class="plat-h scrollx">
+  <svg class="plat" viewBox="0 0 1240 310" role="group" aria-label="One-line diagram of the full StepUp platform. Client files feed ingestion, checks, a company database, 46 analyses, a release gate and a report. This repo rebuilds the parts inside the dashed boundaries. Drawing notes 1 to 4 below give the real scale." aria-describedby="plat-text">
+    <!-- dimension line -->
+    <path class="dim" d="M80 40H1130M80 32V48M1130 32V48M80 40l10-4v8zM1130 40l-10-4v8z"/>
+    <rect x="430" y="26" width="440" height="28" fill="var(--sheet)"/>
+    <text class="dimt" x="650" y="45">FULL CLIENT REPORT: 1 TO 2 WEEKS, THEN ABOUT 3 DAYS</text>
+    <circle class="bub" cx="895" cy="40" r="10"/><text class="bubt" x="895" y="44">4</text>
+    <!-- boundaries -->
+    <rect class="bd" x="12" y="78" width="486" height="214"/><text class="tab" x="26" y="98">THIS REPO</text>
+    <rect class="bd" x="700" y="78" width="500" height="214"/><text class="tab" x="714" y="98">THIS REPO</text>
+    <!-- line -->
+    <path class="on" d="M110 190H228M272 190H398M442 190H568M612 190H758M802 190H928M972 190H1108"/>
+    <!-- nodes -->
+    <text class="nm" x="80" y="140">CLIENT FILES</text>
+    <rect class="off" x="58" y="168" width="44" height="44"/><path class="ink" d="M68 182h24M68 190h24M68 198h16"/>
+    <text class="cap" x="80" y="240">xlsx, csv, pdf</text><text class="cap" x="80" y="258">synthetic here</text>
+    <text class="nm" x="250" y="140">INGESTION</text>
+    <rect class="off" x="228" y="168" width="44" height="44"/><path class="ink" d="M238 202L262 178"/><circle cx="238" cy="202" r="2.5" fill="var(--ink)"/><circle cx="262" cy="178" r="2.5" fill="var(--ink)"/>
+    <text class="cap" x="250" y="240">read, normalize, extract</text><text class="cap" x="250" y="258">figures keep their source</text>
+    <text class="nm" x="420" y="140">CHECKS</text>
+    <rect class="off" x="394" y="164" width="52" height="52" style="stroke:var(--on);fill:var(--on-bg)"/><path class="xmark" data-state="on" style="stroke:var(--on)" d="M404 174L436 206M436 174L404 206"/>
+    <text class="cap" x="420" y="240">flag, do not guess</text><text class="cap" x="420" y="258"><tspan data-b="p.flags"></tspan> held (messy)</text>
+    <text class="nm" x="590" y="140" style="fill:var(--ink2)">COMPANY DATABASE</text>
+    <rect class="ghost" x="568" y="168" width="44" height="44"/><path class="ghost" d="M578 182h24M578 190h24M578 198h24"/>
+    <text class="cap" x="590" y="240">one write path</text><text class="cap" x="590" y="258">not rebuilt here</text>
+    <text class="nm" x="780" y="140">46 ANALYSES</text>
+    <rect class="off" x="758" y="168" width="44" height="44"/><path class="ink" d="M768 180H792M768 190H792M768 200H792"/>
+    <circle class="bub" cx="780" cy="118" r="10"/><text class="bubt" x="780" y="122">1</text>
+    <text class="cap" x="780" y="240"><tspan data-b="p.ana"></tspan> here</text><text class="cap" x="780" y="258">simplified</text>
+    <text class="nm" x="950" y="140">RELEASE GATE</text>
+    <rect class="off" x="924" y="164" width="52" height="52" style="stroke:var(--on);fill:var(--on-bg)"/><path class="xmark" data-state="on" style="stroke:var(--on)" d="M934 174L966 206M966 174L934 206"/>
+    <circle class="bub" cx="950" cy="118" r="10"/><text class="bubt" x="950" y="122">2</text>
+    <text class="cap" x="950" y="240"><tspan data-b="p.tests"></tspan> here</text><text class="cap" x="950" y="258">a fail blocks release</text>
+    <text class="nm" x="1130" y="140">REPORT</text>
+    <circle class="off" cx="1130" cy="190" r="22"/><path class="ink" d="M1122 180h10l5 5v13h-15zM1125 190h9M1125 195h9"/>
+    <circle class="bub" cx="1130" cy="118" r="10"/><text class="bubt" x="1130" y="122">3</text>
+    <text class="cap" x="1130" y="240">AI draft, then</text><text class="cap" x="1130" y="258">a separate check</text>
+  </svg>
+  </div>
+  <div class="plat-v" id="plat-v"></div>
+  <p class="sr" id="plat-text" hidden></p>
+  <ol class="dnotes" style="margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px 36px">
+    <li><span class="bubble">1</span><span>46 analyses in the real platform, including quality of earnings, working capital, pricing and valuation. This repo has <span data-b="p.ana2"></span> of them, simplified.</span></li>
+    <li><span class="bubble">2</span><span>Every release had to pass 495 database tests and a 1,198-check correctness gate. One failed check blocked it. This repo has <span data-b="p.tests"></span> and a gate.</span></li>
+    <li><span class="bubble">3</span><span>A second AI model checked the outputs against fixed criteria. Here the drafter is a template or Claude, and plain checker code decides.</span></li>
+    <li><span class="bubble">4</span><span>A full client report went from one to two weeks to about three days. That is my estimate, not a measured study.</span></li>
+  </ol>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>Full platform, one-line</b></div><div><span>Dwg no.</span><b>SBAE-004</b></div><div><span>Rev</span><b>A</b></div>
+    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">4 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 5 -->
+<section class="sheet" id="sheet-5" aria-labelledby="h-5">
+  <div class="sheet-head">
+    <h2 id="h-5">AI license and access reconciler, built from IEM's posting.</h2>
+    <p class="lede">I built this after reading IEM's posting: a first version of the license and access task the role owns (provision and reclaim licenses, flag underused seats, confirm access meets governance), on synthetic data.</p>
+    <p class="lede" style="margin-top:0">Seats for people who left, and access granted without approval, pile up at onboarding and offboarding. So this grows as headcount grows. IEM has announced a $200M San Antonio plant with 3,000 jobs by 2030.<sup><a href="#fn-1">1</a></sup></p>
+  </div>
+  <div class="dwrap is-messy" id="lic-wrap" style="margin-top:0">
+    <svg class="diagram horiz" viewBox="0 0 1240 290" role="group" aria-label="One-line diagram of the AI license and access reconciler. Six files feed MATCH, a CHECK breaker that holds the seat matching no employee, CLASSIFY, a VERIFY breaker and the action list." aria-describedby="lic-text">
+      <path class="ink" d="M0 105H20M0 135H20M0 165H20M0 195H20M20 105V195"/>
+      <text class="nm" x="60" y="28">SOURCES</text>
+      <text class="num" data-b="l.src.n" x="60" y="62"></text><text class="sub" data-b="l.src.l" x="60" y="80"></text>
+      <g><path class="base" d="M20 150H228M272 150H418M482 150H628M672 150H818M882 150H1018"/><path class="live on" pathLength="1" d="M20 150H228M272 150H418M482 150H628M672 150H818M882 150H1018"/></g>
+      <g><text class="nm" x="250" y="28">MATCH</text><text class="num" data-b="l.match.n" x="250" y="62"></text><text class="sub" data-b="l.match.l" x="250" y="80"></text>
+        <rect class="node" data-state="on" x="228" y="128" width="44" height="44"/><path class="ink" d="M239 162L261 140"/><circle cx="239" cy="162" r="2.5" fill="var(--ink)"/><circle cx="261" cy="140" r="2.5" fill="var(--ink)"/></g>
+      <g><text class="nm" x="450" y="28">CHECK</text><text class="num" data-b="l.check.n" x="450" y="62"></text><text class="sub" data-b="l.check.l" x="450" y="80"></text>
+        <rect class="node" data-state="trip" x="418" y="124" width="64" height="52"/><path class="xmark" data-state="trip" d="M434 134L466 166M466 134L434 166"/>
+        <path class="trip-glyph" d="M488 114l-9 14h6l-5 15 13-18h-7l5-11z"/></g>
+      <g class="held"><path class="held-line" pathLength="1" d="M450 176V226"/><rect class="held-box" x="290" y="226" width="164" height="52"/>
+        <text class="held-t" data-b="l.held" x="446" y="248"></text><text class="held-s" x="446" y="267">NOT MATCHED</text></g>
+      <g><text class="nm" x="650" y="28">CLASSIFY</text><text class="num" data-b="l.cls.n" x="650" y="62"></text><text class="sub" data-b="l.cls.l" x="650" y="80"></text>
+        <rect class="node" data-state="on" x="628" y="128" width="44" height="44"/><path class="ink" d="M638 142H662M638 150H662M638 158H662"/></g>
+      <g><text class="nm" x="850" y="28">VERIFY</text><text class="num" data-b="l.ver.n" x="850" y="62"></text><text class="sub" data-b="l.ver.l" x="850" y="80"></text>
+        <rect class="node" data-state="on" x="818" y="124" width="64" height="52"/><path class="xmark" data-state="on" d="M834 134L866 166M866 134L834 166"/></g>
+      <g><text class="nm" x="1050" y="28">ACTION LIST</text><text class="num" data-b="l.act.n" x="1050" y="62"></text><text class="sub" data-b="l.act.l" x="1050" y="80"></text>
+        <circle class="node" data-state="on" cx="1050" cy="150" r="24"/><path class="ink" d="M1041 140h11l5 5v14h-16zM1044 151h10M1044 156h10"/></g>
+    </svg>
+    <div class="lic-v" id="lic-v"></div>
+    <p class="sr" id="lic-text" hidden></p>
+  </div>
+  <div class="panel-t" style="margin-top:30px"><h3>Findings, by category</h3><span class="dl" id="lic-asof"></span></div>
+  <table class="ft"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col></colgroup>
+    <thead><tr><th>Finding</th><th>Seats</th><th>Monthly</th><th>Action</th><th>Source cells</th></tr></thead><tbody id="lic-rows"></tbody></table>
+  <p class="savings" id="lic-save"></p>
+  <p class="summary" id="lic-summary" style="margin-top:14px;max-width:84ch"></p>
+  <div class="lic-notes">
+    <div><h3>Why plain code, not AI</h3><p>Matching seats to the roster and the usage log is deterministic, so it is code I can test. The summary here is written by a template, not a model, and a separate verifier checks every number in it against the findings.</p></div>
+    <div><h3>How I would measure it</h3><ul class="measure"><li>Seats reclaimed per month.</li><li>Monthly cost recovered.</li><li>Days from a termination to the seat being reclaimed.</li></ul></div>
+  </div>
+  <div class="btnrow" style="margin-top:22px"><a class="btn solid" href="reports/licenses.html">Open the full report</a><a class="btn" href="reports/licenses-actions.csv">Open actions.csv</a></div>
+  <p class="fn" id="fn-1"><sup>1</sup> San Antonio Report, <a href="https://sanantonioreport.org/silicon-valley-manufacturer-iem-200m-factory-brooks-san-antonio/">sanantonioreport.org/silicon-valley-manufacturer-iem-200m-factory-brooks-san-antonio</a>.</p>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>AI license and access reconciler</b></div><div><span>Dwg no.</span><b>SBAE-005</b></div><div><span>Rev</span><b>A</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="l.tb" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">5 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 6 -->
+<section class="sheet" id="sheet-6" aria-labelledby="h-6">
+  <div class="sheet-head">
+    <h2 id="h-6">For engineers: the stack, the data model, and one figure traced end to end.</h2>
+    <p class="lede">Plain Python, no framework. The analysis and license sheets are generated from the engine's own output, and the trace on the right is built from a real run, not typed.</p>
+  </div>
+  <div class="two">
+    <div>
+      <div class="panel-t"><h3>Data model</h3></div>
+      <div class="plat-h">
+        <svg class="diagram" viewBox="0 0 640 150" role="img" aria-label="Four stages in a row: a Sheet of plain rows, a Ledger of figures with sources, a Result of metrics with a status, and a Verdict on the summary.">
+          <path class="base" d="M95 70H150M270 70H325M445 70H500"/><path class="live on" pathLength="1" d="M95 70H150M270 70H325M445 70H500"/>
+          <g><text class="nm" x="60" y="26">SHEET</text><rect class="node" data-state="on" x="38" y="48" width="44" height="44"/><path class="ink" d="M48 62H72M48 70H72M48 78H72"/><text class="cap" x="60" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">read.py</text></g>
+          <g><text class="nm" x="210" y="26">LEDGER</text><rect class="node" data-state="on" x="188" y="48" width="44" height="44"/><path class="ink" d="M198 62H222M198 70H222M198 78H222"/><text class="cap" x="210" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">model.py</text></g>
+          <g><text class="nm" x="385" y="26">RESULT</text><rect class="node" data-state="on" x="363" y="48" width="44" height="44"/><path class="ink" d="M373 62H397M373 70H397M373 78H397"/><text class="cap" x="385" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">analyses.py</text></g>
+          <g><text class="nm" x="560" y="26">VERDICT</text><rect class="node" data-state="on" x="534" y="44" width="52" height="52"/><path class="xmark" data-state="on" d="M544 54L576 86M576 54L544 86"/><text class="cap" x="560" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">verify.py</text></g>
+        </svg>
+      </div>
+      <div class="plat-v" id="eng-v"></div>
+      <dl class="kv" style="margin-top:16px">
+        <dt>Sheet</dt><dd>One file or sheet as plain rows. Nothing is interpreted.</dd>
+        <dt>Ledger</dt><dd>Every figure is a value or None, with its source cell and a named reason when it is None.</dd>
+        <dt>Result</dt><dd>Metrics with a unit and a status: computed, partial or blocked.</dd>
+        <dt>Verdict</dt><dd>Pass or fail on the summary, with the problems listed.</dd>
+      </dl>
+      <div class="panel-t" style="margin-top:28px"><h3>Stack, tests, failure</h3></div>
+      <dl class="kv" id="eng-facts"></dl>
+    </div>
+    <div>
+      <div class="panel-t"><h3>One figure, cell to verifier</h3><span class="dl" id="eng-key"></span></div>
+      <ol class="trace" id="eng-trace"></ol>
+    </div>
+  </div>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>For engineers</b></div><div><span>Dwg no.</span><b>SBAE-006</b></div><div><span>Rev</span><b>A</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Gate</span><b><i class="pass" style="font-style:normal">PASS</i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">6 of 7</b></div>
+  </footer></div>
+</section>
+
+<!-- SHEET 7 -->
+<section class="sheet" id="sheet-7" aria-labelledby="h-7">
+  <div class="sheet-head">
+    <h2 id="h-7">General notes: the decisions, and why I sent this.</h2>
+  </div>
+  <div class="notes3">
+    <ol class="nlist">
+      <li><div><b>Flags, not guesses.</b> A missing April could be filled with an average and the report would look complete. It would also hide the one thing the owner most needs to know. A flagged gap costs a phone call. A hidden estimate can cost a bad decision.</div></li>
+      <li><div><b>Plain code does the arithmetic.</b> In the main engine Claude can draft the summary when an API key is set; every report on this site uses the plain template. One real Claude draft, checked by the verifier, is in <a href="https://github.com/santiagomesa200/small-business-analytics-engine/tree/main/docs/ai-draft-example">the repo</a>: the verifier passed it. Reading numbers, checking subtotals and doing arithmetic have exact right answers, so they are plain code I can test.</div></li>
+      <li><div><b>A separate checker.</b> The drafter never grades its own work. If the check fails, the report says the summary was blocked and why.</div></li>
+      <li><div><b>A release gate.</b> <code class="mono">python -m engine.gate</code> runs the tests and the contract checks. Every figure has a source, every gap has a named reason, and no imputation call exists in the code.</div></li>
+      <li><div><b>What I would measure in production.</b> Hours from file drop to first report. Flagged figures per run and how many a person confirmed. How often an analysis is blocked and why. How often the verifier rejects a draft.</div></li>
+    </ol>
+    <div class="side">
+      <div>
+        <h3>Why I sent this to IEM</h3>
+        <p>I start with the process: how the owner really keeps the numbers. Then I build the version that works, with a separate check on it that does not trust the draft. Sheet 3 shows that check rejecting a summary with a made-up number.</p>
+      </div>
+      <div>
+        <h3>Run it yourself</h3>
+        <pre class="run mono">make check
+.venv/bin/python run.py data/sample</pre>
+      </div>
+      <div>
+        <h3>What this is not</h3>
+        <ul class="not"><li>Not real client data. Every file is synthetic.</li><li>Not production software, and not financial advice.</li><li>Not the StepUp code. It is a from-scratch rebuild.</li></ul>
+      </div>
+      <div class="btnrow">
+        <a class="btn solid" href="https://github.com/santiagomesa200/small-business-analytics-engine">GitHub repo</a>
+        <a class="btn" href="https://github.com/santiagomesa200/small-business-analytics-engine/blob/main/docs/case-study.md">Read the case study</a>
+        <a class="btn" href="reports/messy.html">Open the full report</a>
+      </div>
+      <p><b>Santiago Mesa Rodriguez</b><br><a href="mailto:santiago.mesarodriguez@duke.edu">santiago.mesarodriguez@duke.edu</a><br><a href="https://www.linkedin.com/in/santiago-mesa-rodriguez">linkedin.com/in/santiago-mesa-rodriguez</a></p>
+    </div>
+  </div>
+  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
+    <div class="w2"><span>Title</span><b>General notes</b></div><div><span>Dwg no.</span><b>SBAE-007</b></div><div><span>Rev</span><b>A</b></div>
+    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">7 of 7</b></div>
+  </footer></div>
+</section>
+</main>
+
+<!--SITE-DATA--><script id="site-data" type="application/json">{"scenarios":{"messy":{"folder":"data/sample","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":83,"thousands_sheets":1},"figures":{"total":95,"usable":89,"flagged":6},"flags":[{"key":"pnl.revenue.2025-04","label":"Net sales, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"key":"pnl.cogs.2025-04","label":"Cost of goods sold, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["supplier payment days","inventory days"],"fix":"send the April column"},{"key":"pnl.gross_profit.2025-04","label":"Gross profit, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"key":"pnl.opex.2025-04","label":"Operating expenses, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":[],"fix":"send the April column"},{"key":"pnl.ebitda.2025-04","label":"EBITDA, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["valuation range from an EBITDA multiple"],"fix":"send the April column"},{"key":"pnl.gross_profit.2025-05","label":"Gross profit, May","kind":"subtotal_mismatch","cell":"E6","reason":"The file says $168,519; its parts add up to $159,519.","unblocks":["May gross margin"],"fix":"confirm the right figure with whoever prepared the file"}],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"absent","a":""},{"t":"May-25","k":"","a":"E3"},{"t":"Jun-25","k":"","a":"F3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"","k":"absent","a":""},{"t":"393,875","k":"","a":"E4"},{"t":"404,450","k":"","a":"F4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"","k":"absent","a":""},{"t":"(234,356)","k":"fixed","a":"E5"},{"t":"(242,670)","k":"fixed","a":"F5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"","k":"absent","a":""},{"t":"168,519","k":"trip","a":"E6"},{"t":"161,780","k":"","a":"F6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"","k":"absent","a":""},{"t":"(142,100)","k":"fixed","a":"E7"},{"t":"(139,500)","k":"fixed","a":"F7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"","k":"absent","a":""},{"t":"17,419","k":"","a":"E8"},{"t":"22,280","k":"","a":"F8"}]],"gap_at":4},"attention":[{"text":"April is missing from the Monthly P&L. This blocks: April gross margin, supplier payment days, inventory days, valuation range from an EBITDA multiple. Fix: send the April column.","keys":"pnl.revenue.2025-04, pnl.cogs.2025-04, pnl.gross_profit.2025-04, pnl.opex.2025-04, pnl.ebitda.2025-04"},{"text":"May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file.","keys":"pnl.gross_profit.2025-05"}],"counts":{"computed":2,"partial":2,"blocked":1,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","status":"partial","why":"April's figures are missing and May's subtotal does not add up","fix":"send the April column and confirm the right figure with whoever prepared the file","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":null,"why":"April's figures are missing","source":"pnl_2025_h1.xlsx | Monthly P&L"},{"label":"Gross margin, May","value":null,"why":"May's subtotal does not add up","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Change, first to last month","value":null,"why":"a month in the range is flagged","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +6 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","status":"partial","why":"April's figures are missing","fix":"send the April column","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"DIO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"Cash conversion cycle","value":null,"why":"one of the measures above is missing","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","status":"blocked","why":"April's figures are missing","fix":"send the April column","metrics":[],"assumptions":[]}],"summary":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":10},"report":{"strip":[["figures read","95"],["need attention","2"],["analyses fully computed","2 of 5"],["verifier","PASS"]]},"trace":[{"stage":"READ","file":"engine/read.py","text":"pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."},{"stage":"NORMALIZE","file":"engine/normalize.py","text":"168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."},{"stage":"EXTRACT","file":"engine/extract.py","text":"Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."},{"stage":"CHECK","file":"engine/checks.py","text":"May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."},{"stage":"ANALYZE","file":"engine/analyses.py","text":"Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."},{"stage":"DRAFT","file":"engine/summarize.py","text":"The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."},{"stage":"VERIFY","file":"engine/verify.py","text":"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."},{"stage":"REPORT","file":"engine/report.py","text":"Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."}]},"clean":{"folder":"data/clean","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":85,"thousands_sheets":1},"figures":{"total":95,"usable":95,"flagged":0},"flags":[],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"","a":"E3"},{"t":"May-25","k":"","a":"F3"},{"t":"Jun-25","k":"","a":"G3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"378,850","k":"","a":"E4"},{"t":"393,875","k":"","a":"F4"},{"t":"404,450","k":"","a":"G4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"(223,522)","k":"fixed","a":"E5"},{"t":"(234,356)","k":"fixed","a":"F5"},{"t":"(242,670)","k":"fixed","a":"G5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"155,328","k":"","a":"E6"},{"t":"159,519","k":"","a":"F6"},{"t":"161,780","k":"","a":"G6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"(137,300)","k":"fixed","a":"E7"},{"t":"(142,100)","k":"fixed","a":"F7"},{"t":"(139,500)","k":"fixed","a":"G7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"18,028","k":"","a":"E8"},{"t":"17,419","k":"","a":"F8"},{"t":"22,280","k":"","a":"G8"}]],"gap_at":null},"attention":[],"counts":{"computed":5,"partial":0,"blocked":0,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","status":"computed","why":"","fix":"","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, May","value":"40.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: G6, G4"},{"label":"Change, first to last month","value":"-2.0 pp","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +8 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","status":"computed","why":"","fix":"","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":"54.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"DIO","value":"94.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"Cash conversion cycle","value":"84.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","status":"computed","why":"","fix":"","metrics":[{"label":"Annualized EBITDA","value":"$199,814","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (low)","value":"4.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (high)","value":"6.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Net debt","value":"-$262,300","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (low)","value":"$1,061,556","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (mid)","value":"$1,261,370","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (high)","value":"$1,461,184","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"}],"assumptions":["EBITDA multiples of 4.0x, 5.0x and 6.0x are illustrative assumptions, not market comparables.","Annualized EBITDA = the 6 months in the P&L scaled to 12 months. Seasonality is not adjusted.","Net debt = line of credit (bank statement PDF) minus cash (balance sheet). Equity = multiple x EBITDA - net debt."]}],"summary":"Gross margin went from 42.0% to 40.0% over the period, a change of -2.0 pp [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay, suppliers are paid in about 54.4 days, inventory sits for about 94.4 days and the cash conversion cycle is 84.8 days [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. At 4.0x to 6.0x annualized EBITDA of $199,814, equity value is $1,061,556 to $1,461,184 [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":19},"report":{"strip":[["figures read","95"],["need attention","0"],["analyses fully computed","5 of 5"],["verifier","PASS"]]},"trace":null}},"rejection":{"parts":[{"t":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed","bad":false,"good":""},{"t":"$31,000","bad":true,"good":"$24,125"},{"t":"and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about","bad":false,"good":""},{"t":"44.8 days","bad":true,"good":"7.1 months"},{"t":"of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","bad":false,"good":""}],"verdict":"Verifier result: FAIL - summary blocked","problems":["number $31,000 is not a figure of price_volume: 'Revenue changed by $87,325 between the first and second half...'","number 44.8 days is not a figure of cash_runway: 'Cash fell from $586,000 to $412,300, burning about $57,900 a...'"],"rules":["The summary has one sentence per analysis, and no sentence is repeated.","Every sentence ends with a citation like [cash_runway] naming a real analysis, and each analysis is cited exactly once.","Every number must equal a figure computed by the analysis that sentence cites, and carry the same unit ($, %, days, months, pp, x).","A blocked analysis may not have any number stated for it, and must be described as \"not computed\".","A metric that was not computed may not be mentioned without saying \"not computed\".","A bare four-digit year is allowed only if it appears in that analysis's period labels."]},"licenses":{"asof":"2025-06-30","files":6,"actions":21,"seats":83,"people":120,"flagged":21,"categories":[{"id":"terminated_holder","title":"Seats held by employees who have left","action":"reclaim","count":6,"monthly":210.0,"findings":[{"email":"Marcus.Brooks@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Marcus Brooks left on 2025-02-07","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A2","hr_roster.xlsx | Roster | A12"]},{"email":"Lena.Nguyen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Lena Nguyen left on 2025-05-03","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A2","hr_roster.xlsx | Roster | A77"]},{"email":"grace.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Grace Nguyen left on 2025-05-26","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A4","hr_roster.xlsx | Roster | A35"]},{"email":"sam.foster@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Sam Foster left on 2025-04-27","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A3","hr_roster.xlsx | Roster | A14"]},{"email":"dev.ortiz@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Dev Ortiz left on 2025-02-09","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A5","hr_roster.xlsx | Roster | A68"]},{"email":"luis.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Luis Ortiz left on 2025-03-19","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A3","hr_roster.xlsx | Roster | A89"]}]},{"id":"duplicate_seat","title":"Duplicate seats","action":"reclaim","count":1,"monthly":30.0,"findings":[{"email":"JUNE.PATEL@EXAMPLE.COM","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"June Patel already holds a ChatPilot seat","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A36","seats_chatpilot.csv | table | A6"]}]},{"id":"unused_seat","title":"Seats with no use for 30+ days","action":"confirm with manager","count":10,"monthly":282.0,"findings":[{"email":"elena.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-07, 84 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A4","usage_log.csv | table | A15"]},{"email":"isla.hughes@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-15, 76 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A5","usage_log.csv | table | A16"]},{"email":"ana.okafor@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-03-24, 98 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A6","usage_log.csv | table | A17"]},{"email":"diego.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A9","usage_log.csv | table | A18"]},{"email":"Jordan.Ortiz@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-13, 109 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A2","usage_log.csv | table | A10"]},{"email":"rosa.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-03, 119 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A4","usage_log.csv | table | A13"]},{"email":"mateo.patel@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-03-20, 102 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A8","usage_log.csv | table | A11"]},{"email":"jordan.brooks@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-11, 111 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A5","usage_log.csv | table | A14"]},{"email":"tara.hughes@example.com","tool":"CodeAssist","plan":"Business","cost":null,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":false,"sources":["seats_codeassist.csv | table | A3","usage_log.csv | table | A12"]},{"email":"Rosa.Foster@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-16, 45 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A7","usage_log.csv | table | A9"]}]},{"id":"no_approval","title":"Access with no approval on file","action":"request approval","count":3,"monthly":0,"findings":[{"email":"luis.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Luis Nguyen has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_chatpilot.csv | table | A10"]},{"email":"ana.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Ana Patel has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A6"]},{"email":"Sam.Okafor@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Sam Okafor has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A7"]}]},{"id":"usage_unknown","title":"Seats with no usable usage data","action":"investigate","count":0,"monthly":0,"findings":[]},{"id":"unresolvable","title":"Seats that match no employee","action":"investigate","count":1,"monthly":0,"findings":[{"email":"Rob.Chen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"this email is not in the HR roster; no match was assumed","action":"investigate","counted":false,"sources":["seats_documind.csv | table | A27"]}]}],"monthly":522.0,"annual":6264.0,"counted":16,"summary":"6 seats are held by employees who have left; reclaiming them frees $210 a month [terminated_holder]. 10 seats have not been used for a month or more, and $282 a month is recoverable if the managers agree; 1 of them has no cost on file and is not counted [unused_seat]. 1 person holds a second seat for the same tool, worth $30 a month [duplicate_seat]. 3 people have access with no approval on file, so approval should be requested [no_approval], and 1 seat matches no employee, so it is listed for investigation and not counted [unresolvable]. Reclaiming every counted seat would save $522 a month, or $6,264 a year [savings].","verifier":{"ok":true,"problems":[],"numbers_checked":11}},"tests":110,"engineering":{"trace":[{"stage":"READ","file":"engine/read.py","text":"pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."},{"stage":"NORMALIZE","file":"engine/normalize.py","text":"168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."},{"stage":"EXTRACT","file":"engine/extract.py","text":"Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."},{"stage":"CHECK","file":"engine/checks.py","text":"May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."},{"stage":"ANALYZE","file":"engine/analyses.py","text":"Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."},{"stage":"DRAFT","file":"engine/summarize.py","text":"The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."},{"stage":"VERIFY","file":"engine/verify.py","text":"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."},{"stage":"REPORT","file":"engine/report.py","text":"Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."}],"tests":110}}</script><!--/SITE-DATA-->
+<script>
+(function(){
+const DATA=JSON.parse(document.getElementById('site-data').textContent);
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const n=x=>Number(x).toLocaleString('en-US');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const q=new URLSearchParams(location.search);
+if(q.get('theme'))document.documentElement.dataset.theme=q.get('theme');
+let co=(q.get('company')||q.get('co'))==='clean'?'clean':'messy', openId=null;
+const STAGES={read:[1,'READ'],norm:[2,'NORMALIZE'],ext:[3,'EXTRACT'],check:[4,'CHECK'],ana:[5,'ANALYZE'],ver:[6,'VERIFY'],rep:[7,'REPORT']};
+const D=()=>DATA.scenarios[co];
+const tag=s=>e(s).replace(/\[(\w+)\]/g,(_,id)=>'<span class="cite">'+id.replace(/_/g,' ')+'</span>');
+
+function texts(){
+  const d=D(),c=d.counts,f=d.figures,v=d.verifier;
+  const held=f.flagged;
+  return {'src.n':d.read.files,'src.l':'FILES','read.n':d.read.sheets,'read.l':'SHEETS','norm.n':d.read.text_numbers,'norm.l':'CELLS CONVERTED',
+   'ext.n':f.total,'ext.l':'FIGURES','check.n':f.usable,'check.l':'PASS','check.held':held?held+' HELD':'NONE HELD','check.heldline':held?held+' HELD, NOT GUESSED':'',
+   'ana.n':c.total,'ana.l':'ANALYSES','ana.legend':c.computed+' COMPUTED, '+c.partial+' PARTIAL, '+c.blocked+' BLOCKED','ana.leg1':c.computed+' COMPUTED, '+c.partial+' PARTIAL','ana.leg2':c.blocked+' BLOCKED',
+   'ver.n':v.ok?'PASS':'FAIL','ver.l':v.numbers_checked+' NUMBERS CHECKED','rep.n':c.computed+' OF '+c.total,'rep.l':'FULLY COMPUTED',
+   'tb.ver':v.ok?'PASS':'FAIL','p.flags':DATA.scenarios.messy.figures.flagged,'p.ana':c.total+' of 46','p.ana2':c.total,'p.tests':DATA.tests+' tests'};
+}
+function summaryLine(){
+  const d=D(),c=d.counts,f=d.figures;
+  return (co==='messy'?'Messy company':'Clean company')+': '+d.read.files+' source files, '+f.total+' figures read, '+f.usable+' usable, '+f.flagged+' held at the CHECK breaker. Analyses: '+c.computed+' computed, '+c.partial+' partial, '+c.blocked+' blocked. Independent verifier: '+(d.verifier.ok?'pass':'fail')+'.';
+}
+function renderDiagram(first){
+  const d=D(),t=texts();
+  $$('[data-b]').forEach(el=>{const k=el.dataset.b;if(k in t)el.textContent=t[k];});
+  $$('.vstat').forEach(el=>{el.textContent=t['tb.ver'];el.className='vstat '+(d.verifier.ok?'pass':'fail');});
+  const held=d.figures.flagged>0;
+  $('#dwrap').classList.toggle('is-messy',held);$('#dwrap').classList.toggle('is-clean',!held);
+  $$('#n-check,#x-check').forEach(el=>el.dataset.state=held?'trip':'on');
+  $$('#n-ver,#x-ver').forEach(el=>el.dataset.state=d.verifier.ok?'on':'trip');
+  $$('[data-mini]').forEach(el=>{const a=d.analyses[el.dataset.mini];el.dataset.state=a.status;el.innerHTML='<title>'+e(a.title+': '+a.status)+'</title>';});
+  $('#dtext').textContent=summaryLine();
+  $('#plat-text').textContent='Real platform: 46 analyses, a release gate that blocked a bad release, a second AI model checking outputs. This repo rebuilds '+d.counts.total+' analyses and a gate.';
+  energize(first);
+}
+function energize(first){
+  const lives=$$('[data-live]'),w=$('#dwrap');
+  const held=$$('.held-line');
+  if(first||reduced){lives.forEach(l=>l.classList.add('on'));return;}
+  w.classList.add('resetting');lives.forEach(l=>{l.classList.remove('on');l.style.transitionDelay='0ms';});
+  $$('.trip-glyph').forEach(g=>{g.classList.remove('kick');});
+  void w.offsetWidth;w.classList.remove('resetting');
+  requestAnimationFrame(()=>{
+    lives.forEach(l=>{l.style.transitionDelay=(l.dataset.live*120+40)+'ms';l.classList.add('on');});
+    $$('.trip-glyph').forEach(g=>{g.style.animationDelay='1s';g.style.animationFillMode='backwards';g.classList.add('kick');});
+  });
+}
+
+/* callout */
+function chip(c,t){return '<span class="chip '+c+'">'+e(t)+'</span>';}
+function bodyFor(id){
+  const d=D(),f=d.figures,fd=co==='clean'?'clean':'sample';
+  if(id==='read')return {t:'READ: plain rows, nothing interpreted',h:
+    '<p class="big">'+d.read.files+' files, '+d.read.sheets+' sheets, '+d.read.rows+' rows read exactly as they sit in the files.</p><div class="chips">'+d.files.map(x=>'<span class="chip">'+e(x)+'</span>').join('')+'</div>'};
+  if(id==='norm')return {t:'NORMALIZE: one convention for labels, units and numbers',h:
+    '<p class="big">'+d.read.text_numbers+' numbers arrived as text, such as <span class="mono">(208,626)</span> or <span class="mono">$12.50</span>, and were converted. '+d.read.thousands_sheets+' sheet declared its figures in thousands and was scaled.</p><p>Header names differ between files ("Net Sales", "Revenue", "Sales"), so each is matched to one name. Costs are stored as positive amounts whatever sign the file used.</p>'};
+  if(id==='ext')return {t:'EXTRACT: every figure keeps its source',h:
+    '<p class="big">'+f.total+' figures. '+f.usable+' usable, '+f.flagged+' flagged.</p><p>Each figure carries file, sheet and cell, or the PDF line. A figure that cannot be trusted keeps no value and a named reason. The full list is <a href="https://github.com/santiagomesa200/small-business-analytics-engine/blob/main/outputs/'+fd+'/figures.csv">outputs/'+fd+'/figures.csv</a>.</p>'};
+  if(id==='check'){
+    if(!d.flags.length)return {t:'CHECK: nothing tripped',h:'<p class="big">All '+f.total+' figures passed the subtotal, balance sheet and cross-file checks. Nothing is held back.</p>'};
+    const groups=[];d.flags.forEach(x=>{let g=groups.find(y=>y.reason===x.reason&&y.fix===x.fix);if(!g){g={reason:x.reason,fix:x.fix,items:[],unblocks:[]};groups.push(g);}g.items.push(x);x.unblocks.forEach(u=>{if(!g.unblocks.includes(u))g.unblocks.push(u);});});
+    return {t:'CHECK: '+f.flagged+' figures held',h:groups.map(g=>'<div class="group"><p class="big">'+e(g.reason)+'</p><div class="chips">'+g.items.map(x=>'<span class="chip trip" title="'+e(x.key)+'">'+e(x.label)+' &nbsp;'+e(x.cell)+'</span>').join('')+'</div><dl class="kv"><dt>Stops</dt><dd>'+e(g.unblocks.join(', ')||'nothing else')+'</dd><dt>To unblock</dt><dd>'+e(g.fix)+'</dd></dl></div>').join('')+'<p class="src">The values stay empty. Nothing is averaged or carried forward.</p>'};
+  }
+  if(id==='ana')return {t:'ANALYZE: '+d.counts.computed+' computed, '+d.counts.partial+' partial, '+d.counts.blocked+' blocked',h:
+    '<ul class="alist">'+d.analyses.map(a=>{const ok=a.metrics.filter(m=>m.value!==null);const cls=a.status==='computed'?'on':a.status==='partial'?'partial':'trip';
+      return '<li><span><b>'+e(a.title)+'</b> '+chip(cls,a.status)+'</span>'+(ok.length?'<span class="metrics">'+ok.slice(0,4).map(m=>e(m.label)+' '+e(m.value)).join('  |  ')+'</span>':'')+(a.why?'<span>'+(a.status==='blocked'?'Not computed':'Not fully computed')+' because '+e(a.why)+'. To unblock: '+e(a.fix)+'.</span>':'')+'</li>';}).join('')+'</ul>'};
+  if(id==='ver')return {t:'VERIFY: '+(d.verifier.ok?'the summary passed':'the summary was blocked'),h:
+    '<p class="big">'+d.verifier.sentences+' sentences, '+d.verifier.numbers_checked+' numbers. Each number was matched to a figure of the analysis its sentence cites.</p><p class="summary">'+tag(d.summary)+'</p><p>Drafted by: '+e(d.drafter)+'. Checked by separate code with fixed rules.</p>'+rejects()};
+  if(id==='rep')return {t:'REPORT: what the owner reads',h:
+    '<p class="big">'+d.report.strip.map(s=>s[0]==='verifier'?'verifier <span class="mono">'+e(s[1])+'</span>':'<span class="mono">'+e(s[1])+'</span> '+e(s[0])).join(', ')+'.</p>'+(d.attention.length?'<p>The report ends with a "Needs attention" box listing each held figure, what it stops, and the fix.</p>':'<p>Nothing is flagged, so the Needs attention box says "Nothing flagged."</p>')+'<div class="btnrow"><a class="btn solid" href="reports/'+co+'.html">Open the full report</a></div>'};
+}
+function rejects(){
+  const r=DATA.rejection,bad=r.parts.filter(p=>p.bad);
+  return '<div class="group"><h3 style="margin:0">What it rejects</h3><ul class="alist">'+bad.map((p,i)=>'<li><span><s class="wrong">'+e(p.t)+'</s> should read <span class="right">'+e(p.good)+'</span></span><span class="src">'+e((r.problems[i]||'').split(':')[0])+'.</span></li>').join('')+'</ul><p><a href="#sheet-3">See the full rejected draft on sheet 3.</a></p></div>';
+}
+function openStage(id,fromKey){
+  if(openId===id){closeCallout();return;}
+  openId=id;const b=bodyFor(id),box=$('#callout');
+  $('#co-n').textContent=STAGES[id][0];$('#co-title').textContent=b.t;$('#co-body').innerHTML=b.h;box.hidden=false;
+  $$('.stage').forEach(g=>g.setAttribute('aria-expanded',g.dataset.stage===id));
+  placeLeader();
+  if(matchMedia('(max-width:900px)').matches)box.scrollIntoView({behavior:reduced?'auto':'smooth',block:'nearest'});
+}
+function closeCallout(){openId=null;$('#callout').hidden=true;$$('.stage').forEach(g=>g.setAttribute('aria-expanded','false'));$('#leader').innerHTML='';}
+function placeLeader(){
+  const L=$('#leader');L.innerHTML='';
+  if(!openId||matchMedia('(max-width:900px)').matches)return;
+  const g=$$('.stage[data-stage="'+openId+'"]').find(x=>x.getBoundingClientRect().width>0);if(!g)return;
+  const w=$('#dwrap').getBoundingClientRect(),r=$('.node',g).getBoundingClientRect(),c=$('#callout').getBoundingClientRect();
+  const x=r.right-w.left-4,y0=r.bottom-w.top,y1=c.top-w.top;
+  L.setAttribute('viewBox','0 0 '+w.width+' '+w.height);
+  L.innerHTML='<circle cx="'+x+'" cy="'+(y0-4)+'" r="3.2"/><path d="M'+x+' '+(y0-4)+'V'+(y1-11)+'"/><circle cx="'+x+'" cy="'+(y1)+'" r="11" style="fill:var(--sheet);stroke:var(--ink);stroke-width:1.2"/><text x="'+x+'" y="'+(y1+4)+'" text-anchor="middle" style="font:500 12px var(--mono);fill:var(--ink)">'+STAGES[openId][0]+'</text>';
+}
+$$('.stage').forEach(g=>{
+  g.addEventListener('click',()=>openStage(g.dataset.stage));
+  g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openStage(g.dataset.stage);}});
+});
+$('#co-close').addEventListener('click',()=>{const id=openId;closeCallout();const g=$$('.stage[data-stage="'+id+'"]').find(x=>x.getBoundingClientRect().width>0);g&&g.focus();});
+addEventListener('keydown',ev=>{if(ev.key==='Escape'&&openId)closeCallout();});
+addEventListener('resize',placeLeader);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(placeLeader);
+
+/* sheet 2 */
+const tri=n=>'<svg width="22" height="21" viewBox="0 0 22 21" aria-hidden="true"><path class="tri" d="M11 1.5L20.5 19.5H1.5Z"/><text x="11" y="16">'+n+'</text></svg>';
+const stacked=()=>matchMedia('(max-width:600px)').matches;
+function gridHTML(g,pins,state){
+  const rows=g.rows,head=rows[0],placed={};
+  ['absent','fixed','trip'].forEach(k=>{if(rows.some(r=>r.some(c=>c.k===k)))pins[k]=++state.n;});  // the same order on every screen width
+  const pin=(k,t)=>'<span class="pin'+(t?'':' c')+'">'+(t?tri(pins[k]):pins[k])+'</span>';
+  if(!stacked()){
+    const out=['<table class="pnl" aria-label="The raw Monthly P&amp;L as the owner sent it"><tbody>'];
+    rows.forEach((row,ri)=>out.push('<tr>'+row.map((c,ci)=>{
+      const tg=ri===0?'th':'td';let inner=e(c.t);
+      if(c.k==='absent'&&ri===0)inner+='<br><small>absent</small>'+pin('absent',1);
+      if(c.k==='trip')inner+=pin('trip',1);
+      if(c.k==='fixed'&&!placed.fixed){placed.fixed=1;inner+=pin('fixed',0);}
+      return '<'+tg+(c.k?' class="'+c.k+'"':'')+'>'+inner+'</'+tg+'>';}).join('')+'</tr>'));
+    return out.join('')+'</tbody></table>';
+  }
+  const out=['<table class="pnl stack" aria-label="The raw Monthly P&amp;L as the owner sent it, one month per block"><tbody>'];
+  for(let j=1;j<head.length;j++){
+    if(head[j].k==='absent'){
+      out.push('<tr class="gone"><th colspan="2">'+e(head[j].t)+' (absent)'+pin('absent',1)+'</th></tr><tr class="gone"><td colspan="2">'+e((D().flags.find(x=>x.kind==='missing_period')||{reason:'The column is missing.'}).reason)+'</td></tr>');continue;}
+    out.push('<tr><th class="mh" colspan="2">'+e(head[j].t)+'</th></tr>');
+    for(let i=1;i<rows.length;i++){const c=rows[i][j];let inner=e(c.t);
+      let lab=e(rows[i][0].t);
+      if(c.k==='trip')lab+=pin('trip',1);
+      if(c.k==='fixed'&&!placed.fixed){placed.fixed=1;lab+=pin('fixed',0);}
+      out.push('<tr><td style="position:relative">'+lab+'</td><td'+(c.k?' class="'+c.k+'"':'')+'>'+inner+'</td></tr>');}
+  }
+  return out.join('')+'</tbody></table>';
+}
+function renderGrid(){
+  const d=D(),g=d.grid,pins={},state={n:0};
+  $('#grid').innerHTML=gridHTML(g,pins,state);
+  const notes=[],fixed=g.rows.flat().filter(c=>c.k==='fixed').length;
+  const nAbs=d.flags.filter(x=>x.kind==='missing_period'),nSub=d.flags.filter(x=>x.kind==='subtotal_mismatch');
+  if(nAbs.length)notes.push([pins.absent,1,'<b>'+e(nAbs[0].reason.replace(/\.$/,''))+'.</b> '+nAbs.length+' figures go with it. The engine holds them and does not fill the gap. To unblock: '+e(nAbs[0].fix)+'.']);
+  if(nSub.length)notes.push([pins.trip,1,'<b>'+e(nSub[0].label)+' does not add up.</b> '+e(nSub[0].reason)+' The engine flags the total and keeps the parts. To unblock: '+e(nSub[0].fix)+'.']);
+  if(fixed)notes.push([pins.fixed,0,'<b>'+fixed+' cells in this sheet are text in parentheses,</b> like (208,626). NORMALIZE reads them as numbers, so they are fixed, not flagged.']);
+  if(!d.flags.length)notes.unshift(['ok',0,'<b>Nothing to hold back.</b> Same company, same layout, April present and every subtotal adding up.']);
+  notes.sort((a,b)=>(a[0]==='ok'?0:a[0])-(b[0]==='ok'?0:b[0]));
+  $('#gridnotes').innerHTML=notes.map(x=>'<li>'+(x[1]?'<span class="dtri">'+tri(x[0])+'</span>':'<span class="bubble" '+(x[0]==='ok'?'style="border-color:var(--on);color:var(--on)"':'')+'>'+x[0]+'</span>')+'<span>'+x[2]+'</span></li>').join('');
+  const st=matchMedia('(max-width:1100px)').matches;
+  $('#s2-lede').textContent=co==='messy'?(st?'Above: the Monthly P&L as it arrived, with the problems the engine found marked on the cells. Below: the report that came out of it.':'Left: the Monthly P&L as it arrived, with the problems the engine found marked on the cells. Right: the report that came out of it.'):'Same company with the problems removed. Nothing is flagged, so all five analyses compute. Switch the company on sheet 1 to compare.';
+  $('#rm-strip').innerHTML=d.report.strip.map(s=>{const v='<span class="'+(s[0]==='need attention'&&s[1]!=='0'?'t':(s[0]==='verifier'&&s[1]==='PASS'?'g':''))+'">'+e(s[1])+'</span>';return s[0]==='verifier'?e(s[0])+' '+v:v+' '+e(s[0]);}).join(' &nbsp;|&nbsp; ');
+  const box=$('#rm-attn');box.className='attn-box'+(d.attention.length?'':' ok');
+  box.innerHTML='<h4>Needs attention ('+d.attention.length+' item'+(d.attention.length===1?'':'s')+')</h4>'+(d.attention.length?'<ul class="attn">'+d.attention.map((a,i)=>'<li><span class="bubble">'+(i+1)+'</span><span>'+e(a.text)+'</span></li>').join('')+'</ul>':'<p>Nothing flagged.</p>');
+  $('#rm-summary').innerHTML=tag(d.summary);
+  $('#rm-open').href='reports/'+co+'.html';
+}
+
+/* sheet 3 */
+function renderRejection(){
+  const r=DATA.rejection;
+  $('#rej-draft').innerHTML=r.parts.map(p=>p.bad?'<s class="wrong">'+e(p.t)+'</s><span class="right">'+e(p.good)+'</span>':tag(p.t)).join(' ');
+  $('#rej-log').innerHTML='<span class="f">'+e(r.verdict)+'</span>\n'+r.problems.map(p=>'- '+e(p)).join('\n');
+  $('#rej-rules').innerHTML=r.rules.map(x=>'<li><span>'+e(x)+'</span></li>').join('');
+}
+
+/* vertical buses for narrow screens (sheets 4 and 5) */
+function vbus(items,o){
+  const gap=84,top=44,cy=i=>top+i*gap+22,h=top+items.length*gap+24,W=360;
+  let x='<svg class="diagram vbus" viewBox="0 0 '+W+' '+h+'" role="img" aria-label="'+e(o.label)+'">';
+  (o.bounds||[]).forEach(b=>{const y=cy(b[0])-38,hh=cy(b[1])-cy(b[0])+76;x+='<rect class="bd" x="6" y="'+y+'" width="266" height="'+hh+'"/><text class="tab" x="264" y="'+(y+16)+'">THIS REPO</text>';});
+  items.forEach((it,i)=>{if(i){const gh=it.ghost||items[i-1].ghost,d='M40 '+(cy(i-1)+24)+'V'+(cy(i)-24);x+='<path class="'+(gh?'ghost':'base')+'" d="'+d+'"/>'+(gh?'':'<path class="live on" pathLength="1" d="'+d+'"/>');}});
+  items.forEach((it,i)=>{const y=cy(i),st=it.state||'on';
+    if(it.kind==='breaker')x+='<rect class="node" data-state="'+st+'" x="16" y="'+(y-26)+'" width="48" height="52"/><path class="xmark" data-state="'+st+'" d="M24 '+(y-18)+'L56 '+(y+18)+'M56 '+(y-18)+'L24 '+(y+18)+'"/>'+(st==='trip'?'<path class="trip-glyph" d="M70 '+(y-30)+'l-9 14h6l-5 15 13-18h-7l5-11z"/>':'');
+    else if(it.kind==='load')x+='<circle class="node" data-state="on" cx="40" cy="'+y+'" r="22"/><path class="ink" d="M32 '+(y-10)+'h10l5 5v13h-15zM35 '+y+'h9M35 '+(y+5)+'h9"/>';
+    else if(it.kind==='ghost')x+='<rect class="ghost" x="18" y="'+(y-22)+'" width="44" height="44"/><path class="ghost" d="M28 '+(y-8)+'h24M28 '+y+'h24M28 '+(y+8)+'h24"/>';
+    else if(it.kind==='src')x+='<path class="ink" d="M8 '+(y-12)+'H32M8 '+y+'H32M8 '+(y+12)+'H32M32 '+(y-12)+'V'+(y+12)+'"/>';
+    else if(it.kind==='list')x+='<rect class="node" data-state="'+st+'" x="18" y="'+(y-22)+'" width="44" height="44"/><path class="ink" d="M28 '+(y-8)+'H52M28 '+y+'H52M28 '+(y+8)+'H52"/>';
+    else x+='<rect class="node" data-state="'+st+'" x="20" y="'+(y-22)+'" width="44" height="44"/><path class="ink" d="M30 '+(y+10)+'L54 '+(y-10)+'"/>';
+    x+='<text class="nm" x="84" y="'+(y-12)+'" style="fill:'+(it.ghost?'var(--ink2)':'var(--ink)')+'">'+e(it.name)+'</text>';
+    if(it.n!==undefined)x+='<text x="84" y="'+(y+10)+'"><tspan class="num">'+e(it.n)+'</tspan><tspan class="sub" dx="6" style="font-size:12px">'+e(it.l||'')+'</tspan></text>';
+    (it.caps||[]).forEach((c,k)=>x+='<text class="cap" x="84" y="'+(y+(it.n!==undefined?28:6)+k*16)+'">'+e(c)+'</text>');
+    if(it.bubble)x+='<circle class="bub" cx="300" cy="'+y+'" r="10"/><text class="bubt" x="300" y="'+(y+4)+'">'+it.bubble+'</text>';
+    if(it.held)x+='<text class="held-s" x="84" y="'+(y+30)+'" style="text-anchor:start">'+e(it.held)+'</text>';
+  });
+  if(o.dim){const a=cy(0)-22,b=cy(items.length-1)+22,m=(a+b)/2;x+='<path d="M342 '+a+'V'+b+'M336 '+(a+8)+'L342 '+a+'L348 '+(a+8)+'M336 '+(b-8)+'L342 '+b+'L348 '+(b-8)+'" fill="none" stroke="var(--ink)" stroke-width="1.2"/><text class="dimt" transform="translate(332 '+m+') rotate(-90)">'+e(o.dim)+'</text><circle class="bub" cx="342" cy="'+(a+34)+'" r="10"/><text class="bubt" x="342" y="'+(a+38)+'">4</text>';}
+  return x+'</svg>';
+}
+function renderLic(){
+  const L=DATA.licenses,flagged=L.flagged,unres=L.categories.find(c=>c.id==='unresolvable').count;
+  const t={'l.src.n':L.files,'l.src.l':'FILES','l.match.n':L.seats-unres,'l.match.l':'OF '+L.seats+' SEATS MATCHED','l.check.n':L.seats-unres,'l.check.l':'PASS','l.held':unres+' HELD',
+    'l.cls.n':flagged,'l.cls.l':'SEATS FLAGGED','l.ver.n':L.verifier.ok?'PASS':'FAIL','l.ver.l':L.verifier.numbers_checked+' NUMBERS CHECKED','l.act.n':L.actions,'l.act.l':'ACTIONS','l.tb':L.verifier.ok?'PASS':'FAIL'};
+  $$('[data-b^="l."]').forEach(el=>{const k=el.dataset.b;if(k in t){el.textContent=t[k];if(k==='l.tb')el.className='vstat '+(L.verifier.ok?'pass':'fail');}});
+  const dd=x=>'$'+Math.round(x).toLocaleString('en-US');
+  $('#lic-asof').textContent='As of '+L.asof;
+  $('#lic-rows').innerHTML=L.categories.map(c=>{
+    const f=c.findings,src=f.length?f[0].sources.join('; ')+(f.length>1?' and '+(f.length-1)+' more':''):'';
+    const nocost=f.filter(x=>x.cost===null).length;
+    const money=c.id==='unresolvable'?'not counted':c.monthly===0?'none':dd(c.monthly)+(nocost?' ('+nocost+' not counted)':'');
+    return '<tr><td><b>'+e(c.title)+'</b></td><td class="n" data-label="Seats">'+c.count+'</td><td class="n" data-label="Monthly" style="white-space:normal">'+e(money)+'</td><td data-label="Action">'+e(c.action)+'</td><td class="s">'+e(src)+'</td></tr>';}).join('');
+  const nocostAll=L.categories.reduce((a,c)=>a+c.findings.filter(x=>x.cost===null).length,0);
+  $('#lic-save').innerHTML='Not counted: '+unres+' seat that matches no employee and '+nocostAll+' seat with no cost on file. Both are in the action list, not in the total.';
+  $('#lic-summary').innerHTML=tag(L.summary);
+  $('#lic-text').textContent=L.seats+' seats read from '+L.files+' files. '+unres+' matches no employee and is held. '+flagged+' seats flagged across five categories. Verifier: '+(L.verifier.ok?'pass':'fail')+'.';
+  $('#lic-v').innerHTML=vbus([
+    {kind:'src',name:'SOURCES',n:L.files,l:'FILES'},{name:'MATCH',n:L.seats-unres,l:'OF '+L.seats+' MATCHED'},
+    {kind:'breaker',state:'trip',name:'CHECK',n:L.seats-unres,l:'PASS',held:unres+' HELD, NOT MATCHED'},
+    {kind:'list',name:'CLASSIFY',n:flagged,l:'SEATS FLAGGED'},{kind:'breaker',name:'VERIFY',n:L.verifier.ok?'PASS':'FAIL',l:L.verifier.numbers_checked+' NUMBERS CHECKED'},
+    {kind:'load',name:'ACTION LIST',n:L.actions,l:'ACTIONS'}],{label:'One-line diagram of the AI license and access reconciler, drawn vertically.'});
+}
+function renderEng(){
+  const G=DATA.engineering;
+  $('#eng-trace').innerHTML=G.trace.map(t=>'<li><div><span class="st">'+e(t.stage)+'</span><span class="fl">'+e(t.file)+'</span><p>'+e(t.text)+'</p></div></li>').join('');
+  $('#eng-key').textContent='pnl.gross_profit.2025-05';
+  $('#eng-facts').innerHTML='<dt>Stack</dt><dd>Python, with every dependency pinned in requirements.txt.</dd><dt>Site</dt><dd>One static HTML file. The data in it is written by scripts/make_site.py.</dd><dt>Tests</dt><dd>'+G.tests+' tests: each stage, each seeded problem, regression tests for bugs found in review, and property tests for the verifier and the number parser. The gate also checks that this site and every report match a fresh run.</dd><dt>Failure</dt><dd>A bad figure becomes None with a named reason. A bad file is logged and skipped. A zero denominator is not computed. Nothing raises on bad data.</dd>';
+  $('#eng-v').innerHTML=vbus([{kind:'src',name:'SHEET',caps:['read.py']},{kind:'list',name:'LEDGER',caps:['model.py']},{kind:'list',name:'RESULT',caps:['analyses.py']},{kind:'breaker',name:'VERDICT',caps:['verify.py']}],{label:'The data model drawn vertically: Sheet, Ledger, Result, Verdict.'});
+}
+function renderPlat(){
+  const c=DATA.scenarios.messy.counts;
+  $('#plat-v').innerHTML=vbus([
+    {kind:'src',name:'CLIENT FILES',caps:['xlsx, csv, pdf','synthetic here']},{name:'INGESTION',caps:['read, normalize, extract','figures keep their source']},
+    {kind:'breaker',name:'CHECKS',caps:['flag, do not guess',DATA.scenarios.messy.figures.flagged+' held (messy)']},
+    {kind:'ghost',ghost:1,name:'COMPANY DATABASE',caps:['one write path','not rebuilt here']},
+    {kind:'list',name:'46 ANALYSES',caps:[c.total+' of 46 here','simplified'],bubble:1},{kind:'breaker',name:'RELEASE GATE',caps:[DATA.tests+' tests here','a fail blocks release'],bubble:2},
+    {kind:'load',name:'REPORT',caps:['AI draft, then','a separate check'],bubble:3}],
+    {label:'One-line diagram of the full platform, drawn vertically. The first three nodes and the next three are inside the dashed THIS REPO boundaries.',bounds:[[0,2],[4,6]],dim:'FULL REPORT: 1 TO 2 WEEKS, THEN ABOUT 3 DAYS'});
+}
+function setCo(next,first){
+  co=next;
+  $$('#switch button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.co===co));
+  $('#switch').dataset.co=co;
+  renderDiagram(first);renderGrid();
+  if(openId){const id=openId;openId=null;openStage(id);}
+}
+$$('#switch button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.co!==co)setCo(b.dataset.co,false);}));
+renderRejection();setCo(co,true);renderLic();renderPlat();renderEng();
+matchMedia('(max-width:600px)').addEventListener('change',()=>renderGrid());matchMedia('(max-width:1100px)').addEventListener('change',()=>renderGrid());
+{const AL={verify:'ver',normalize:'norm',extract:'ext',analyze:'ana',report:'rep'},o=AL[q.get('open')]||q.get('open');if(STAGES[o])openStage(o);}
+})();
+</script>
+</body>
+</html>
