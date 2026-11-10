@@ -73,7 +73,9 @@ def flag_rows(ledger, results) -> list[dict]:
             m = re.match(r"(.+?) \d{4}-\d{2}: file says ([\d,]+) but its parts give ([\d,]+)", i.message)
             reason = f"The file says ${m.group(2)}; its parts add up to ${m.group(3)}." if m else dates_to_words(i.message) + "."
             cell, action = fig.source.split(" | ")[-1], FIX.get(i.kind, fix("parts give"))
-        out.append(dict(key=i.key, label=label, kind=i.kind, cell=cell, reason=reason, unblocks=list(dict.fromkeys(blocked)), fix=action))
+        out.append(
+            dict(figure=i.key, label=label, kind=i.kind, cell=cell, reason=reason, unblocks=list(dict.fromkeys(blocked)), fix=action)
+        )
     return out
 
 
@@ -137,7 +139,7 @@ def one(folder: str) -> dict:
         figures=dict(total=len(ledger.figs), usable=n_ok, flagged=len(ledger.figs) - n_ok),
         flags=flag_rows(ledger, results),
         grid=grid(sheets, ledger),
-        attention=[dict(text=t, keys=k) for t, k in attention(ledger, results)],
+        attention=[dict(text=t, figures=k) for t, k in attention(ledger, results)],
         counts=dict(computed=count("computed"), partial=count("partial"), blocked=count("blocked"), total=len(results)),
         analyses=[
             dict(

@@ -43,4 +43,4 @@ def test_site_flag_rows_accept_issues_keyed_by_filename():
     ledger = Ledger()
     ledger.issues.append(Issue("unreadable_file", "sales.csv", "sales.csv could not be read (ValueError); skipped"))
     (row,) = make_site.flag_rows(ledger, [])
-    assert row["key"] == "sales.csv" and "could not be read" in row["reason"]
+    assert row["figure"] == "sales.csv" and "could not be read" in row["reason"]

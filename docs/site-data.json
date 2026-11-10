@@ -23,7 +23,7 @@
    },
    "flags": [
     {
-     "key": "pnl.revenue.2025-04",
+     "figure": "pnl.revenue.2025-04",
      "label": "Net sales, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
@@ -34,7 +34,7 @@
      "fix": "send the April column"
     },
     {
-     "key": "pnl.cogs.2025-04",
+     "figure": "pnl.cogs.2025-04",
      "label": "Cost of goods sold, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
@@ -46,7 +46,7 @@
      "fix": "send the April column"
     },
     {
-     "key": "pnl.gross_profit.2025-04",
+     "figure": "pnl.gross_profit.2025-04",
      "label": "Gross profit, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
@@ -57,7 +57,7 @@
      "fix": "send the April column"
     },
     {
-     "key": "pnl.opex.2025-04",
+     "figure": "pnl.opex.2025-04",
      "label": "Operating expenses, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
@@ -66,7 +66,7 @@
      "fix": "send the April column"
     },
     {
-     "key": "pnl.ebitda.2025-04",
+     "figure": "pnl.ebitda.2025-04",
      "label": "EBITDA, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
@@ -77,7 +77,7 @@
      "fix": "send the April column"
     },
     {
-     "key": "pnl.gross_profit.2025-05",
+     "figure": "pnl.gross_profit.2025-05",
      "label": "Gross profit, May",
      "kind": "subtotal_mismatch",
      "cell": "E6",
@@ -319,11 +319,11 @@
    "attention": [
     {
      "text": "April is missing from the Monthly P&L. This blocks: April gross margin, supplier payment days, inventory days, valuation range from an EBITDA multiple. Fix: send the April column.",
-     "keys": "pnl.revenue.2025-04, pnl.cogs.2025-04, pnl.gross_profit.2025-04, pnl.opex.2025-04, pnl.ebitda.2025-04"
+     "figures": "pnl.revenue.2025-04, pnl.cogs.2025-04, pnl.gross_profit.2025-04, pnl.opex.2025-04, pnl.ebitda.2025-04"
     },
     {
      "text": "May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file.",
-     "keys": "pnl.gross_profit.2025-05"
+     "figures": "pnl.gross_profit.2025-05"
     }
    ],
    "counts": {
