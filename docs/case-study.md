@@ -4,11 +4,11 @@ Every figure about the StepUp platform on this page is self-reported from my own
 
 ## The problem
 
-StepUp & Company is a three-person advisory firm. I co-founded it and was there from January 2025 to November 2026. Owners sent spreadsheets and PDFs: different layouts, different units, gaps. Turning that into a full client report took one to two weeks, mostly cleaning files and rebuilding the same analyses by hand.
+StepUp & Company is a three-person advisory firm. I built this platform as its Analytics & AI Lead (January 2025 – November 2026). Owners sent spreadsheets and PDFs: different layouts, different units, gaps. Turning that into a full client report took one to two weeks, mostly cleaning files and rebuilding the same analyses by hand.
 
 ## My role
 
-I designed the process and the rules. I built the platform myself with AI coding tools. I specified what it had to do, what it must refuse to do, and how it would be tested. My two co-founders used the platform in their client work.
+I designed the process and the rules. I built the platform myself with AI coding tools. I specified what it had to do, what it must refuse to do, and how it would be tested. The firm's two partners used the platform in their client work.
 
 ## What I built
 

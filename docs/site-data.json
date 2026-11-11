@@ -9,6 +9,28 @@
     "pnl_2025_h1.xlsx",
     "sales_by_product.csv"
    ],
+   "file_labels": [
+    {
+     "file": "ar_aging_2025-06-30.csv",
+     "label": "Customer aging report (CSV)"
+    },
+    {
+     "file": "balance_sheet_2025-06-30.csv",
+     "label": "Balance sheet (CSV)"
+    },
+    {
+     "file": "bank_statement_summary.pdf",
+     "label": "Bank statement (PDF)"
+    },
+    {
+     "file": "pnl_2025_h1.xlsx",
+     "label": "Monthly P&L (Excel)"
+    },
+    {
+     "file": "sales_by_product.csv",
+     "label": "Sales by product (CSV)"
+    }
+   ],
    "read": {
     "files": 5,
     "sheets": 6,
@@ -27,6 +49,7 @@
      "label": "Net sales, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
+     "where": "Monthly P&L, April column (absent)",
      "reason": "April's column is missing from the Monthly P&L.",
      "unblocks": [
       "April gross margin"
@@ -38,6 +61,7 @@
      "label": "Cost of goods sold, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
+     "where": "Monthly P&L, April column (absent)",
      "reason": "April's column is missing from the Monthly P&L.",
      "unblocks": [
       "supplier payment days",
@@ -50,6 +74,7 @@
      "label": "Gross profit, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
+     "where": "Monthly P&L, April column (absent)",
      "reason": "April's column is missing from the Monthly P&L.",
      "unblocks": [
       "April gross margin"
@@ -61,6 +86,7 @@
      "label": "Operating expenses, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
+     "where": "Monthly P&L, April column (absent)",
      "reason": "April's column is missing from the Monthly P&L.",
      "unblocks": [],
      "fix": "send the April column"
@@ -70,6 +96,7 @@
      "label": "EBITDA, April",
      "kind": "missing_period",
      "cell": "Monthly P&L, April column (absent)",
+     "where": "Monthly P&L, April column (absent)",
      "reason": "April's column is missing from the Monthly P&L.",
      "unblocks": [
       "valuation range from an EBITDA multiple"
@@ -81,6 +108,7 @@
      "label": "Gross profit, May",
      "kind": "subtotal_mismatch",
      "cell": "E6",
+     "where": "Monthly P&L, cell E6",
      "reason": "The file says $168,519; its parts add up to $159,519.",
      "unblocks": [
       "May gross margin"
@@ -336,6 +364,7 @@
     {
      "id": "gross_margin",
      "title": "Gross margin trend",
+     "name": "Gross margin trend",
      "status": "partial",
      "why": "April's figures are missing and May's subtotal does not add up",
      "fix": "send the April column and confirm the right figure with whoever prepared the file",
@@ -390,6 +419,7 @@
     {
      "id": "price_volume",
      "title": "Price vs volume effect on revenue",
+     "name": "Price vs volume effect on revenue",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -470,6 +500,7 @@
     {
      "id": "working_capital",
      "title": "Working capital (DSO, DPO, DIO)",
+     "name": "Working capital",
      "status": "partial",
      "why": "April's figures are missing",
      "fix": "send the April column",
@@ -507,6 +538,7 @@
     {
      "id": "cash_runway",
      "title": "Cash runway",
+     "name": "Cash runway",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -543,6 +575,7 @@
     {
      "id": "valuation",
      "title": "Valuation range from an EBITDA multiple",
+     "name": "Valuation range",
      "status": "blocked",
      "why": "April's figures are missing",
      "fix": "send the April column",
@@ -629,6 +662,28 @@
     "bank_statement_summary.pdf",
     "pnl_2025_h1.xlsx",
     "sales_by_product.csv"
+   ],
+   "file_labels": [
+    {
+     "file": "ar_aging_2025-06-30.csv",
+     "label": "Customer aging report (CSV)"
+    },
+    {
+     "file": "balance_sheet_2025-06-30.csv",
+     "label": "Balance sheet (CSV)"
+    },
+    {
+     "file": "bank_statement_summary.pdf",
+     "label": "Bank statement (PDF)"
+    },
+    {
+     "file": "pnl_2025_h1.xlsx",
+     "label": "Monthly P&L (Excel)"
+    },
+    {
+     "file": "sales_by_product.csv",
+     "label": "Sales by product (CSV)"
+    }
    ],
    "read": {
     "files": 5,
@@ -882,6 +937,7 @@
     {
      "id": "gross_margin",
      "title": "Gross margin trend",
+     "name": "Gross margin trend",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -936,6 +992,7 @@
     {
      "id": "price_volume",
      "title": "Price vs volume effect on revenue",
+     "name": "Price vs volume effect on revenue",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -1016,6 +1073,7 @@
     {
      "id": "working_capital",
      "title": "Working capital (DSO, DPO, DIO)",
+     "name": "Working capital",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -1053,6 +1111,7 @@
     {
      "id": "cash_runway",
      "title": "Cash runway",
+     "name": "Cash runway",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -1089,6 +1148,7 @@
     {
      "id": "valuation",
      "title": "Valuation range from an EBITDA multiple",
+     "name": "Valuation range",
      "status": "computed",
      "why": "",
      "fix": "",
@@ -1557,50 +1617,5 @@
    "numbers_checked": 11
   }
  },
- "tests": 110,
- "engineering": {
-  "trace": [
-   {
-    "stage": "READ",
-    "file": "engine/read.py",
-    "text": "pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."
-   },
-   {
-    "stage": "NORMALIZE",
-    "file": "engine/normalize.py",
-    "text": "168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."
-   },
-   {
-    "stage": "EXTRACT",
-    "file": "engine/extract.py",
-    "text": "Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."
-   },
-   {
-    "stage": "CHECK",
-    "file": "engine/checks.py",
-    "text": "May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."
-   },
-   {
-    "stage": "ANALYZE",
-    "file": "engine/analyses.py",
-    "text": "Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."
-   },
-   {
-    "stage": "DRAFT",
-    "file": "engine/summarize.py",
-    "text": "The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."
-   },
-   {
-    "stage": "VERIFY",
-    "file": "engine/verify.py",
-    "text": "The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."
-   },
-   {
-    "stage": "REPORT",
-    "file": "engine/report.py",
-    "text": "Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."
-   }
-  ],
-  "tests": 110
- }
+ "tests": 128
 }

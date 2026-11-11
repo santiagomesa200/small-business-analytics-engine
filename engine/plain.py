@@ -14,6 +14,15 @@ MEASURES = {
 }
 
 
+ANALYSIS_NAMES = {  # the analyses by name, without the jargon in the full titles
+    "gross_margin": "Gross margin trend",
+    "price_volume": "Price vs volume effect on revenue",
+    "working_capital": "Working capital",
+    "cash_runway": "Cash runway",
+    "valuation": "Valuation range",
+}
+
+
 def month_name(year_month: str) -> str:
     return MONTHS[int(year_month[5:7]) - 1]
 

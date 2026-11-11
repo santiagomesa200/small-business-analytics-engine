@@ -141,6 +141,23 @@ PLAIN = {
     "sales": "sales by product",
     "bank": "bank statement",
 }
+LABELS = {
+    "pnl": "Monthly P&L",
+    "balance": "Balance sheet",
+    "ar_aging": "Customer aging report",
+    "sales": "Sales by product",
+    "bank": "Bank statement",
+}
+KINDS = {"xlsx": "Excel", "xls": "Excel", "csv": "CSV", "pdf": "PDF"}
+
+
+def file_label(name: str) -> str:
+    """A file in plain words and its type, such as 'Monthly P&L (Excel)'. Which file is which comes from the same name rule the readers use."""
+    prefix = next((p for p in HANDLERS if name.lower().startswith(p)), None)
+    kind = KINDS.get(name.rsplit(".", 1)[-1].lower())
+    return f"{LABELS[prefix]} ({kind})" if prefix and kind else name
+
+
 HANDLERS = {"pnl": pnl, "balance": balance, "ar_aging": ar_aging, "sales": sales, "bank": bank}
 
 

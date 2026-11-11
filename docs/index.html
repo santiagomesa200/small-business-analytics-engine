@@ -54,8 +54,8 @@ a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:.2em;text
 a:not(.btn):hover{text-decoration-color:var(--on);color:var(--on)}
 :where(a,button,.stage):focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:2px}
 .stage:focus-visible{outline:none}
-.stage:focus-visible .hit{stroke:var(--focus);stroke-width:2;stroke-dasharray:5 4}
-.dl{font:600 12.5px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase}#eng-key{white-space:nowrap}
+.stage:focus-visible .tile{stroke:var(--focus);stroke-width:2.4;stroke-dasharray:5 4}
+.dl{font:600 12.5px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase}
 .mono,code,pre{font-family:var(--mono)}
 .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--sheet);padding:8px 12px;z-index:9}
 .skip:focus{left:8px}
@@ -107,6 +107,7 @@ svg text{font-family:var(--cond);fill:var(--ink)}
 .diagram .nm{font-weight:600;font-size:13.5px;letter-spacing:.08em;text-anchor:middle}
 .diagram .num{font:500 24px var(--mono);text-anchor:middle}
 .diagram .sub{font-weight:500;font-size:12px;letter-spacing:.07em;text-anchor:middle;fill:var(--ink2)}
+.horiz .sub{letter-spacing:.03em}
 .diagram .base{fill:none;stroke:var(--hair);stroke-width:1.5}
 .diagram .live{fill:none;stroke:var(--on);stroke-width:3.5;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .7s var(--out)}
 .diagram .live.on{stroke-dashoffset:0}
@@ -118,7 +119,16 @@ svg text{font-family:var(--cond);fill:var(--ink)}
 .xmark{fill:none;stroke:var(--ink);stroke-width:2;transition:stroke .5s var(--out)}
 [data-state="on"]~.xmark,.xmark[data-state="on"]{stroke:var(--on)}
 .xmark[data-state="trip"]{stroke:var(--trip)}
-.hit{fill:transparent;stroke:transparent}
+.tile{fill:transparent;stroke:var(--hair);stroke-width:1.2;transition:stroke .25s var(--out)}
+.cuebox{fill:var(--sheet);stroke:var(--hair);stroke-width:1.2}
+.cue{font:600 12px var(--cond);letter-spacing:.1em;text-anchor:middle;fill:var(--ink)}
+.cue-c{display:none}
+.stage:hover .tile,.stage:hover .cuebox{stroke:var(--ink)}
+.stage:hover .tile{stroke-width:2}
+.stage[aria-expanded="true"] .tile{stroke:var(--ink);stroke-width:2.4}
+.stage[aria-expanded="true"] .cuebox{fill:var(--ink);stroke:var(--ink)}
+.stage[aria-expanded="true"] .cue{fill:var(--sheet)}
+.stage[aria-expanded="true"] .cue-o{display:none}.stage[aria-expanded="true"] .cue-c{display:inline}
 .stage{cursor:pointer}
 .stage:hover .node,.stage[aria-expanded="true"] .node{stroke-width:2.6}
 .bub{fill:var(--sheet);stroke:var(--ink);stroke-width:1.2}
@@ -145,8 +155,30 @@ svg text{font-family:var(--cond);fill:var(--ink)}
 .hint{color:var(--ink2);font-size:14px;margin-top:0}
 .ldot{stroke-width:1.5;stroke:var(--ink);fill:var(--sheet)}
 
+/* how to, and the what-ran panel */
+.howto{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:max-content repeat(3,minmax(max-content,1fr));border:1px solid var(--hair);background:var(--sheet);font-size:15px}
+.howto li{display:flex;align-items:center;gap:12px;padding:12px 18px;border-left:1px solid var(--hair2)}
+.howto li.lt{border-left:0;font:600 12.5px var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.ran{margin-top:18px}
+.ran-note{margin-top:18px;max-width:100ch}
+.dwrap .callout{margin-top:22px}
+.ran .panel-t{flex-wrap:wrap}
+.ran-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 44px;font-size:15px}
+.ran.busy .ran-body{opacity:.45}
+.ran .kv{align-content:start;gap:12px 16px}
+.ran .kv dt{font:600 12.5px/1.6 var(--cond);letter-spacing:.07em;text-transform:uppercase;padding-top:1.5px}
+.ran .kv dd>p{margin:0}.ran .kv dd>p+*{margin-top:8px}
+.ran .attn-box ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ran .btnrow{margin-top:2px}
+.ran .wait{visibility:hidden}
+.ran .alist li{display:block}
+.ran .chips .chip{font:500 13.5px var(--sans)}
+button.btn[hidden]{display:none}
+@media (max-width:1100px){.ran-body{grid-template-columns:minmax(0,1fr)}.howto{grid-template-columns:repeat(3,minmax(0,1fr))}.howto li.lt{grid-column:1/-1;border-bottom:1px solid var(--hair2);padding-bottom:10px}.howto li:nth-child(2){border-left:0}}
+@media (max-width:640px){.howto{grid-template-columns:minmax(0,1fr)}.howto li{border-left:0}.howto li:nth-child(n+3){border-top:1px solid var(--hair2)}}
+
 /* callout */
-.callout{margin-top:26px;border:1px solid var(--hair);background:var(--sheet);padding:20px 24px 22px;position:relative;scroll-margin-bottom:20px}
+.callout{margin-top:18px;border:1px solid var(--hair);background:var(--sheet);padding:20px 24px 22px;position:relative;scroll-margin-bottom:20px}
 .callout[hidden]{display:none}
 .callout-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .callout-head h2{margin:0;font:600 15px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;max-width:none}
@@ -155,9 +187,7 @@ svg text{font-family:var(--cond);fill:var(--ink)}
 .close:hover{border-color:var(--ink)}
 .callout-body{display:grid;gap:14px;font-size:15px;max-width:100ch}
 .callout-body .big{font-size:16px}
-.leader{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-.leader path,.leader line{stroke:var(--ink);stroke-width:1.2;fill:none}
-.leader circle{fill:var(--ink)}
+.heldline{margin:0;border-left:3px solid var(--trip);padding-left:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font:500 12.5px var(--mono);border:1px solid var(--hair2);padding:3px 8px;border-radius:2px;background:var(--sheet)}
 .chip.trip{border-color:var(--trip);color:var(--trip);background:var(--trip-bg)}
@@ -174,11 +204,31 @@ svg text{font-family:var(--cond);fill:var(--ink)}
 .cite{font:500 12px var(--mono);color:var(--ink2);border:1px solid var(--hair2);padding:0 5px;border-radius:2px;white-space:nowrap}
 .summary{font-size:15.5px;line-height:1.7}
 .btnrow{display:flex;flex-wrap:wrap;gap:10px}
-a.btn{display:inline-block;border:1px solid var(--ink);padding:9px 16px;font:600 13px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;text-decoration:none;color:var(--ink);background:var(--sheet);transition:background .25s var(--out),color .25s var(--out)}
-a.btn:hover{background:var(--ink);color:var(--sheet)}
-a.btn.solid{background:var(--ink);color:var(--sheet)}
-a.btn.solid:hover{background:var(--on);border-color:var(--on);color:var(--sel-fg)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) a.btn.solid:hover{color:#04210f}}
+a.btn,button.btn{display:inline-block;border:1px solid var(--ink);padding:9px 16px;font:600 13px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;text-decoration:none;color:var(--ink);background:var(--sheet);transition:background .25s var(--out),color .25s var(--out)}
+a.btn:hover,button.btn:hover{background:var(--ink);color:var(--sheet)}
+a.btn.solid,button.btn.solid{background:var(--ink);color:var(--sheet)}
+a.btn.solid:hover,button.btn.solid:hover{background:var(--on);border-color:var(--on);color:var(--sel-fg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) a.btn.solid:hover,:root:not([data-theme="light"]) button.btn.solid:hover{color:#04210f}}
+
+/* run it live */
+#run-stamp{display:block;max-width:100%}
+.hero-top{justify-content:flex-start}
+.runctl{display:flex;align-items:flex-end}
+.runctl .btn{box-sizing:border-box;width:309px;height:43px;padding:0 8px}
+.runnote{flex:1 0 100%;margin-top:2px}
+.runhelp{font:400 14px/1.45 var(--sans);color:var(--ink2)}
+.chip.tag{display:inline-block;font:600 12px/1.4 var(--cond);letter-spacing:.07em;text-transform:uppercase;overflow-wrap:anywhere}
+#run-live:hover{background:var(--ink2);border-color:var(--ink2);color:var(--sheet)}
+button.btn.solid:disabled,button.btn.solid:disabled:hover{background:var(--ink);border-color:var(--ink);color:var(--sheet)}
+button.btn{cursor:pointer}
+button.btn:disabled{opacity:.55;cursor:progress}
+.switch button:disabled{cursor:progress}
+.num.wait{fill:var(--ink2)}
+.raw{margin-top:12px}
+.raw[hidden]{display:none}
+.raw summary{cursor:pointer;font:600 12.5px/1.2 var(--cond);letter-spacing:.07em;text-transform:uppercase;padding:6px 0}
+.raw .log{margin-top:8px;max-height:320px;overflow:auto}
+.is-blank .held{opacity:0}
 
 /* sheet 2 */
 .two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:start}
@@ -249,16 +299,12 @@ table.pnl{border-collapse:collapse;width:100%;font:400 12px/1.3 var(--mono);min-
 .vbus .off{fill:var(--sheet);stroke:var(--ink);stroke-width:1.6}
 .ft{border-collapse:collapse;width:100%;font-size:14.5px;table-layout:fixed}
 .ft th{text-align:left;font:600 12.5px var(--cond);letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);border-bottom:1.5px solid var(--hair);padding:6px 10px}
+#lic-asof{white-space:nowrap}
+.ft th:nth-child(2),.ft th:nth-child(3){text-align:right}
 .ft td{border-bottom:1px solid var(--hair2);padding:9px 10px;vertical-align:top}
-.ft .n{text-align:right;font-family:var(--mono);white-space:nowrap}.ft .s{font:400 12.5px/1.45 var(--mono);color:var(--ink2);overflow-wrap:anywhere}
-.ft col.c1{width:27%}.ft col.c2{width:7%}.ft col.c3{width:18%}.ft col.c4{width:15%}
+.ft .n{text-align:right;white-space:nowrap}.ft small{font-size:12.5px;color:var(--ink2)}
+.ft col.c1{width:42%}.ft col.c2{width:10%}.ft col.c3{width:24%}
 .savings{margin:16px 0 0;font-size:15.5px;max-width:84ch}
-.trace{list-style:none;margin:0;padding:0;counter-reset:t}
-.trace li{display:grid;grid-template-columns:28px 1fr;gap:12px;position:relative;padding-bottom:18px;counter-increment:t}
-.trace li::before{content:counter(t);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1.2px solid var(--ink);font:500 12px var(--mono);background:var(--sheet);position:relative;z-index:1}
-.trace li:not(:last-child)::after{content:"";position:absolute;left:13px;top:28px;bottom:0;width:1px;background:var(--hair)}
-.trace .st{font:600 12.5px var(--cond);letter-spacing:.08em;text-transform:uppercase}.trace .fl{font:400 12.5px var(--mono);color:var(--ink2);margin-left:8px}
-.trace p{margin:2px 0 0;font-size:14.5px;line-height:1.55;overflow-wrap:anywhere}
 .fn{font-size:13.5px;color:var(--ink2);margin-top:20px;max-width:100ch;overflow-wrap:anywhere}
 .measure{margin:6px 0 0;padding-left:1.1em}.measure li{margin:0 0 4px}
 .lic-notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 44px;margin-top:26px}
@@ -286,9 +332,9 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
 
 @media (max-width:1100px){.lic-notes{grid-template-columns:minmax(0,1fr)}.sheet{padding:26px 28px 0}.tbwrap{margin:36px -20px 0}.two,.notes3{grid-template-columns:minmax(0,1fr);gap:34px}}
 @media (max-width:900px){
+  #sheet-1{display:flex;flex-direction:column}.hero-grid{display:contents}#sheet-1 .sheet-head{order:0}#sheet-1 .howto{order:1}#sheet-1 .hero-top{order:2}#sheet-1 .dwrap{order:3}#sheet-1 .dindex{order:4;margin-top:26px}#sheet-1 .tbwrap{order:5}
   .diagram.horiz{display:none}.vert{display:block}
   .plat-h{display:none}.plat-v,.lic-v{display:block}
-  .leader{display:none}
   .hero-top{align-items:flex-start}
   .hero-grid{grid-template-columns:minmax(0,1fr)}
 }
@@ -299,6 +345,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
   .sheet::before{inset:5px}
   .switch{width:100%}.switch button{min-width:0;padding:13px 8px}
   .feeder{width:100%;flex-direction:column;align-items:stretch;gap:6px}
+  .runctl{width:100%}.runctl .btn{width:100%}
   .tbwrap{margin:28px -10px 0}
   .tb{width:100%;grid-template-columns:1fr 1fr}
   .tb .w2{grid-column:span 2}
@@ -321,8 +368,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
   <div class="hero-grid">
     <div class="sheet-head" style="margin:0">
       <h1 id="h-1">Messy files in, checked analyses out.</h1>
-      <p class="lede">Plain code reads the files and does the arithmetic, AI can draft the summary, and a separate checker compares the numbers in the draft with the computed figures and blocks the summary if one does not match. A from-scratch rebuild, on synthetic data, of part of the platform I built at StepUp &amp; Company. Switch the company, then select any numbered stage to see its real data.</p>
-      <p class="lede"><b>Why not just give the files to an LLM?</b> A model can give a confident answer when a month is missing or a subtotal is wrong, and nothing in it tells you which numbers to trust. Client work needs every figure traced to its source and every gap flagged, so the split above is how I built it. Before this, a full client report at StepUp took one to two weeks (my estimate).</p>
+      <p class="lede">Plain code reads the files and does the arithmetic, AI can draft the summary, and a separate checker compares the numbers in the draft with the computed figures and blocks the summary if one does not match. A from-scratch rebuild, on synthetic data, of part of the platform I built at StepUp &amp; Company.</p>
       <div class="author">
         <span><b>Santiago Mesa Rodriguez</b></span>
         <a href="mailto:santiago.mesarodriguez@duke.edu">santiago.mesarodriguez@duke.edu</a>
@@ -337,12 +383,17 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <li><span class="sn">2</span><a href="#sheet-2">Before and after</a></li>
         <li><span class="sn">3</span><a href="#sheet-3">The checker</a></li>
         <li><span class="sn">4</span><a href="#sheet-4">Full platform, one-line</a></li>
-        <li><span class="sn">5</span><a href="#sheet-5">AI license and access reconciler</a></li>
-        <li><span class="sn">6</span><a href="#sheet-6">For engineers</a></li>
-        <li><span class="sn">7</span><a href="#sheet-7">General notes</a></li>
+        <li><span class="sn">5</span><a href="#sheet-5">AI license and access reconciler <span class="chip tag on">Built for IEM</span></a></li>
+        <li><span class="sn">6</span><a href="#sheet-6">General notes</a></li>
       </ol>
     </nav>
   </div>
+  <ol class="howto" aria-label="How to use this page">
+    <li class="lt">How to use this page</li>
+    <li><span class="bubble">1</span><span>Press Run it live.</span></li>
+    <li><span class="bubble">2</span><span>Click any stage to see what it did.</span></li>
+    <li><span class="bubble">3</span><span>Switch to the clean company to compare.</span></li>
+  </ol>
   <div class="hero-top">
     <div class="feeder" role="group" aria-label="Choose which company the engine runs on">
       <span class="dl" id="feeder-l">Company</span>
@@ -352,33 +403,37 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <button type="button" data-co="clean" aria-pressed="false">Clean company</button>
       </div>
     </div>
+    <div class="runctl"><button class="btn solid" id="run-live" type="button">Run it live</button></div>
+    <div class="runnote">
+      <p class="runhelp" id="run-help">Runs the real engine on these sample files, in your browser. The first run downloads about 15 MB. Nothing is uploaded.</p>
+      </div>
   </div>
 
   <div class="dwrap is-messy" id="dwrap">
     <p class="sr" id="dtext" hidden></p>
     <!-- desktop one-line -->
-    <svg class="diagram horiz" id="svg-h" viewBox="0 0 1240 296" role="group" aria-label="One-line diagram of the engine. Seven stages in a row, each selectable." aria-describedby="dtext">
+    <svg class="diagram horiz" id="svg-h" viewBox="0 -12 1240 308" role="group" aria-label="One-line diagram of the engine. Seven stages in a row, each one opens its details." aria-describedby="dtext">
       <!-- sources -->
       <g>
         <text class="nm" x="30" y="28">SOURCES</text>
         <text class="num" data-b="src.n" x="30" y="62"></text><text class="sub" data-b="src.l" x="30" y="80"></text>
         <path class="ink" d="M6 110H40M6 130H40M6 150H40M6 170H40M6 190H40M40 110V190"/>
-        <path class="base" d="M40 150H190"/>
-        <path class="live on" data-live="0" pathLength="1" d="M40 150H190"/>
+        <path class="base" d="M40 150H202"/>
+        <path class="live on" data-live="0" pathLength="1" d="M40 150H202"/>
       </g>
       <!-- segments -->
       <g>
-        <path class="base" d="M230 150H345M385 150H500M540 150H664M716 150H850M890 150H1004M1056 150H1148"/>
-        <path class="live on" data-live="1" pathLength="1" d="M230 150H345"/>
-        <path class="live on" data-live="2" pathLength="1" d="M385 150H500"/>
-        <path class="live on" data-live="3" pathLength="1" d="M540 150H664"/>
-        <path class="live on" data-live="4" pathLength="1" d="M716 150H850"/>
-        <path class="live on" data-live="5" pathLength="1" d="M890 150H1004"/>
-        <path class="live on" data-live="6" pathLength="1" d="M1056 150H1148"/>
+        <path class="base" d="M242 150H358M398 150H514M554 150H664M716 150H826M866 150H976M1028 150H1136"/>
+        <path class="live on" data-live="1" pathLength="1" d="M242 150H358"/>
+        <path class="live on" data-live="2" pathLength="1" d="M398 150H514"/>
+        <path class="live on" data-live="3" pathLength="1" d="M554 150H664"/>
+        <path class="live on" data-live="4" pathLength="1" d="M716 150H826"/>
+        <path class="live on" data-live="5" pathLength="1" d="M866 150H976"/>
+        <path class="live on" data-live="6" pathLength="1" d="M1028 150H1136"/>
       </g>
       <!-- 1 READ -->
-      <g class="stage" data-stage="read" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 1, READ. Show its data.">
-        <rect class="hit" x="140" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="read" transform="translate(12 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 1, READ. Show its data.">
+        <rect class="tile" x="138" y="0" width="144" height="188"/><rect class="cuebox" x="146" y="-9" width="56" height="18"/><text class="cue cue-o" x="174" y="4">OPEN</text><text class="cue cue-c" x="174" y="4">CLOSE</text>
         <text class="nm" x="210" y="28">READ</text>
         <text class="num" data-b="read.n" x="210" y="62"></text><text class="sub" data-b="read.l" x="210" y="80"></text>
         <path class="ink" d="M210 118V130"/><circle class="bub" cx="210" cy="108" r="10"/><text class="bubt" x="210" y="112">1</text>
@@ -386,8 +441,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="ink" d="M200 160L220 142"/><circle cx="200" cy="160" r="2.5" fill="var(--ink)"/><circle cx="220" cy="142" r="2.5" fill="var(--ink)"/>
       </g>
       <!-- 2 NORMALIZE -->
-      <g class="stage" data-stage="norm" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 2, NORMALIZE. Show its data.">
-        <rect class="hit" x="295" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="norm" transform="translate(13 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 2, NORMALIZE. Show its data.">
+        <rect class="tile" x="293" y="0" width="144" height="188"/><rect class="cuebox" x="301" y="-9" width="56" height="18"/><text class="cue cue-o" x="329" y="4">OPEN</text><text class="cue cue-c" x="329" y="4">CLOSE</text>
         <text class="nm" x="365" y="28">NORMALIZE</text>
         <text class="num" data-b="norm.n" x="365" y="62"></text><text class="sub" data-b="norm.l" x="365" y="80"></text>
         <path class="ink" d="M365 118V130"/><circle class="bub" cx="365" cy="108" r="10"/><text class="bubt" x="365" y="112">2</text>
@@ -395,8 +450,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="ink" d="M355 160L375 142"/><circle cx="355" cy="160" r="2.5" fill="var(--ink)"/><circle cx="375" cy="142" r="2.5" fill="var(--ink)"/>
       </g>
       <!-- 3 EXTRACT -->
-      <g class="stage" data-stage="ext" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 3, EXTRACT. Show its data.">
-        <rect class="hit" x="450" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="ext" transform="translate(14 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 3, EXTRACT. Show its data.">
+        <rect class="tile" x="448" y="0" width="144" height="188"/><rect class="cuebox" x="456" y="-9" width="56" height="18"/><text class="cue cue-o" x="484" y="4">OPEN</text><text class="cue cue-c" x="484" y="4">CLOSE</text>
         <text class="nm" x="520" y="28">EXTRACT</text>
         <text class="num" data-b="ext.n" x="520" y="62"></text><text class="sub" data-b="ext.l" x="520" y="80"></text>
         <path class="ink" d="M520 118V130"/><circle class="bub" cx="520" cy="108" r="10"/><text class="bubt" x="520" y="112">3</text>
@@ -404,8 +459,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="ink" d="M510 160L530 142"/><circle cx="510" cy="160" r="2.5" fill="var(--ink)"/><circle cx="530" cy="142" r="2.5" fill="var(--ink)"/>
       </g>
       <!-- 4 CHECK breaker -->
-      <g class="stage" data-stage="check" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 4, CHECK breaker. Show its data.">
-        <rect class="hit" x="620" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="check" transform="translate(0 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 4, CHECK breaker. Show its data.">
+        <rect class="tile" x="618" y="0" width="144" height="188"/><rect class="cuebox" x="626" y="-9" width="56" height="18"/><text class="cue cue-o" x="654" y="4">OPEN</text><text class="cue cue-c" x="654" y="4">CLOSE</text>
         <text class="nm" x="690" y="28">CHECK</text>
         <text class="num" data-b="check.n" x="690" y="62"></text><text class="sub" data-b="check.l" x="690" y="80"></text>
         <path class="ink" d="M690 118V124"/><circle class="bub" cx="690" cy="108" r="10"/><text class="bubt" x="690" y="112">4</text>
@@ -420,8 +475,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <text class="held-s" x="688" y="277">NOT GUESSED</text>
       </g>
       <!-- 5 ANALYZE -->
-      <g class="stage" data-stage="ana" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 5, ANALYZE. Show its data.">
-        <rect class="hit" x="760" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="ana" transform="translate(-24 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 5, ANALYZE. Show its data.">
+        <rect class="tile" x="798" y="0" width="144" height="188"/><rect class="cuebox" x="806" y="-9" width="56" height="18"/><text class="cue cue-o" x="834" y="4">OPEN</text><text class="cue cue-c" x="834" y="4">CLOSE</text>
         <text class="nm" x="870" y="28">ANALYZE</text>
         <text class="num" data-b="ana.n" x="870" y="62"></text><text class="sub" data-b="ana.l" x="870" y="80"></text>
         <path class="ink" d="M870 118V130"/><circle class="bub" cx="870" cy="108" r="10"/><text class="bubt" x="870" y="112">5</text>
@@ -429,15 +484,15 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="ink" d="M858 142H882M858 150H882M858 158H882"/>
       </g>
       <g>
-        <path class="base" d="M870 170V200M770 200H870M780 200V214M800 200V214M820 200V214M840 200V214M860 200V214"/>
+        <g transform="translate(-24 0)"><path class="base" d="M870 170V200M770 200H870M780 200V214M800 200V214M820 200V214M840 200V214M860 200V214"/>
         <circle class="mini" data-mini="0" cx="780" cy="222" r="8"/><circle class="mini" data-mini="1" cx="800" cy="222" r="8"/>
         <circle class="mini" data-mini="2" cx="820" cy="222" r="8"/><circle class="mini" data-mini="3" cx="840" cy="222" r="8"/>
-        <circle class="mini" data-mini="4" cx="860" cy="222" r="8"/>
-        <text class="leg" data-b="ana.leg1" x="872" y="252"></text><text class="leg" data-b="ana.leg2" x="872" y="268"></text>
+        <circle class="mini" data-mini="4" cx="860" cy="222" r="8"/></g>
+        <text class="leg" data-b="ana.legend" x="724" y="252" style="text-anchor:start"></text>
       </g>
       <!-- 6 VERIFY breaker -->
-      <g class="stage" data-stage="ver" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
-        <rect class="hit" x="960" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="ver" transform="translate(-28 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
+        <rect class="tile" x="958" y="0" width="144" height="188"/><rect class="cuebox" x="966" y="-9" width="56" height="18"/><text class="cue cue-o" x="994" y="4">OPEN</text><text class="cue cue-c" x="994" y="4">CLOSE</text>
         <text class="nm" x="1030" y="28">VERIFY</text>
         <text class="num" data-b="ver.n" x="1030" y="62"></text><text class="sub" data-b="ver.l" x="1030" y="80"></text>
         <path class="ink" d="M1030 118V124"/><circle class="bub" cx="1030" cy="108" r="10"/><text class="bubt" x="1030" y="112">6</text>
@@ -445,8 +500,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="xmark" id="x-ver" data-state="on" d="M1014 134L1046 166M1046 134L1014 166"/>
       </g>
       <!-- 7 REPORT load -->
-      <g class="stage" data-stage="rep" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
-        <rect class="hit" x="1100" y="4" width="140" height="184"/>
+      <g class="stage" data-stage="rep" transform="translate(-12 0)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
+        <rect class="tile" x="1098" y="0" width="144" height="188"/><rect class="cuebox" x="1106" y="-9" width="56" height="18"/><text class="cue cue-o" x="1134" y="4">OPEN</text><text class="cue cue-c" x="1134" y="4">CLOSE</text>
         <text class="nm" x="1170" y="28">REPORT</text>
         <text class="num" data-b="rep.n" x="1170" y="62"></text><text class="sub" data-b="rep.l" x="1170" y="80"></text>
         <path class="ink" d="M1170 118V128"/><circle class="bub" cx="1170" cy="108" r="10"/><text class="bubt" x="1170" y="112">7</text>
@@ -456,7 +511,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
     </svg>
 
     <!-- mobile vertical bus -->
-    <svg class="diagram vert" id="svg-v" viewBox="0 0 360 700" role="group" aria-label="One-line diagram of the engine, drawn vertically. Seven stages, each selectable." aria-describedby="dtext">
+    <svg class="diagram vert" id="svg-v" viewBox="0 0 360 712" role="group" aria-label="One-line diagram of the engine, drawn vertically. Seven stages, each selectable." aria-describedby="dtext">
       <g>
         <path class="ink" d="M6 14H26M6 24H26M6 34H26M6 44H26M6 54H26M26 14V54"/>
         <text class="nm" x="70" y="30" style="text-anchor:start">SOURCES</text>
@@ -464,7 +519,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <path class="base" d="M26 34H34V92"/><path class="live on" data-live="0" pathLength="1" d="M26 34H34V92"/>
       </g>
       <g class="stage" data-stage="read" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 1, READ. Show its data.">
-        <rect class="hit" x="2" y="92" width="356" height="62"/>
+        <rect class="tile" x="2" y="84" width="356" height="58"/><rect class="cuebox" x="298" y="75" width="56" height="18"/><text class="cue cue-o" x="326" y="88">OPEN</text><text class="cue cue-c" x="326" y="88">CLOSE</text>
         <rect class="node" data-state="on" x="14" y="92" width="40" height="40"/><path class="ink" d="M24 122L44 104"/><circle cx="24" cy="122" r="2.5" fill="var(--ink)"/><circle cx="44" cy="104" r="2.5" fill="var(--ink)"/>
         <text class="nm" x="70" y="108" style="text-anchor:start">READ</text>
         <text x="70" y="130" style="text-anchor:start"><tspan class="num" data-b="read.n" style="font-size:18px"></tspan><tspan class="sub" data-b="read.l" dx="6" style="text-anchor:start"></tspan></text>
@@ -472,7 +527,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
       </g>
       <path class="base" d="M34 132V176"/><path class="live on" data-live="1" pathLength="1" d="M34 132V176"/>
       <g class="stage" data-stage="norm" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 2, NORMALIZE. Show its data.">
-        <rect class="hit" x="2" y="176" width="356" height="62"/>
+        <rect class="tile" x="2" y="168" width="356" height="58"/><rect class="cuebox" x="298" y="159" width="56" height="18"/><text class="cue cue-o" x="326" y="172">OPEN</text><text class="cue cue-c" x="326" y="172">CLOSE</text>
         <rect class="node" data-state="on" x="14" y="176" width="40" height="40"/><path class="ink" d="M24 206L44 188"/><circle cx="24" cy="206" r="2.5" fill="var(--ink)"/><circle cx="44" cy="188" r="2.5" fill="var(--ink)"/>
         <text class="nm" x="70" y="192" style="text-anchor:start">NORMALIZE</text>
         <text x="70" y="214" style="text-anchor:start"><tspan class="num" data-b="norm.n" style="font-size:18px"></tspan><tspan class="sub" data-b="norm.l" dx="6" style="text-anchor:start"></tspan></text>
@@ -480,7 +535,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
       </g>
       <path class="base" d="M34 216V260"/><path class="live on" data-live="2" pathLength="1" d="M34 216V260"/>
       <g class="stage" data-stage="ext" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 3, EXTRACT. Show its data.">
-        <rect class="hit" x="2" y="260" width="356" height="62"/>
+        <rect class="tile" x="2" y="252" width="356" height="58"/><rect class="cuebox" x="298" y="243" width="56" height="18"/><text class="cue cue-o" x="326" y="256">OPEN</text><text class="cue cue-c" x="326" y="256">CLOSE</text>
         <rect class="node" data-state="on" x="14" y="260" width="40" height="40"/><path class="ink" d="M24 290L44 272"/><circle cx="24" cy="290" r="2.5" fill="var(--ink)"/><circle cx="44" cy="272" r="2.5" fill="var(--ink)"/>
         <text class="nm" x="70" y="276" style="text-anchor:start">EXTRACT</text>
         <text x="70" y="298" style="text-anchor:start"><tspan class="num" data-b="ext.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ext.l" dx="6" style="text-anchor:start"></tspan></text>
@@ -488,7 +543,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
       </g>
       <path class="base" d="M34 300V338"/><path class="live on" data-live="3" pathLength="1" d="M34 300V338"/>
       <g class="stage" data-stage="check" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 4, CHECK breaker. Show its data.">
-        <rect class="hit" x="2" y="338" width="356" height="72"/>
+        <rect class="tile" x="2" y="326" width="356" height="88"/><rect class="cuebox" x="298" y="317" width="56" height="18"/><text class="cue cue-o" x="326" y="330">OPEN</text><text class="cue cue-c" x="326" y="330">CLOSE</text>
         <rect class="node" data-state="trip" x="8" y="338" width="52" height="52"/><path class="xmark" data-state="trip" d="M18 348L50 380M50 348L18 380"/>
         <path class="trip-glyph held" d="M64 330l-9 14h6l-5 15 13-18h-7l5-11z"/>
         <text class="nm" x="76" y="358" style="text-anchor:start">CHECK</text>
@@ -498,7 +553,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
       </g>
       <path class="base" d="M34 390V440"/><path class="live on" data-live="4" pathLength="1" d="M34 390V440"/>
       <g class="stage" data-stage="ana" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 5, ANALYZE. Show its data.">
-        <rect class="hit" x="2" y="440" width="356" height="86"/>
+        <rect class="tile" x="2" y="432" width="356" height="106"/><rect class="cuebox" x="298" y="423" width="56" height="18"/><text class="cue cue-o" x="326" y="436">OPEN</text><text class="cue cue-c" x="326" y="436">CLOSE</text>
         <rect class="node" data-state="on" x="14" y="440" width="40" height="40"/><path class="ink" d="M22 452H46M22 460H46M22 468H46"/>
         <text class="nm" x="70" y="456" style="text-anchor:start">ANALYZE</text>
         <text x="70" y="478" style="text-anchor:start"><tspan class="num" data-b="ana.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ana.l" dx="6" style="text-anchor:start"></tspan></text>
@@ -507,22 +562,34 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <circle class="bub" cx="338" cy="460" r="10"/><text class="bubt" x="338" y="464">5</text>
       </g>
       <path class="base" d="M34 480V560"/><path class="live on" data-live="5" pathLength="1" d="M34 480V560"/>
-      <g class="stage" data-stage="ver" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
-        <rect class="hit" x="2" y="548" width="356" height="62"/>
+      <g class="stage" data-stage="ver" transform="translate(0 12)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 6, VERIFY breaker. Show its data.">
+        <rect class="tile" x="2" y="544" width="356" height="64"/><rect class="cuebox" x="298" y="535" width="56" height="18"/><text class="cue cue-o" x="326" y="548">OPEN</text><text class="cue cue-c" x="326" y="548">CLOSE</text>
         <rect class="node" data-state="on" x="8" y="548" width="52" height="52"/><path class="xmark" data-state="on" d="M18 558L50 590M50 558L18 590"/>
         <text class="nm" x="76" y="566" style="text-anchor:start">VERIFY</text>
         <text x="76" y="588" style="text-anchor:start"><tspan class="num" data-b="ver.n" style="font-size:18px"></tspan><tspan class="sub" data-b="ver.l" dx="6" style="text-anchor:start"></tspan></text>
         <circle class="bub" cx="338" cy="574" r="10"/><text class="bubt" x="338" y="578">6</text>
       </g>
-      <path class="base" d="M34 600V636"/><path class="live on" data-live="6" pathLength="1" d="M34 600V636"/>
-      <g class="stage" data-stage="rep" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
-        <rect class="hit" x="2" y="636" width="356" height="56"/>
+      <path class="base" d="M34 612V648"/><path class="live on" data-live="6" pathLength="1" d="M34 612V648"/>
+      <g class="stage" data-stage="rep" transform="translate(0 12)" role="button" tabindex="0" aria-expanded="false" aria-label="Stage 7, REPORT load. Show its data.">
+        <rect class="tile" x="2" y="630" width="356" height="60"/><rect class="cuebox" x="298" y="621" width="56" height="18"/><text class="cue cue-o" x="326" y="634">OPEN</text><text class="cue cue-c" x="326" y="634">CLOSE</text>
         <circle class="node" data-state="on" cx="34" cy="660" r="22"/><path class="ink" d="M26 650h10l5 5v13h-15zM29 660h9M29 665h9"/>
         <text class="nm" x="76" y="654" style="text-anchor:start">REPORT</text>
         <text x="76" y="676" style="text-anchor:start"><tspan class="num" data-b="rep.n" style="font-size:18px"></tspan><tspan class="sub" data-b="rep.l" dx="6" style="text-anchor:start"></tspan></text>
         <circle class="bub" cx="338" cy="660" r="10"/><text class="bubt" x="338" y="664">7</text>
       </g>
     </svg>
+    <aside class="callout" id="callout" hidden aria-live="polite" aria-labelledby="co-title">
+      <div class="callout-head"><span class="bubble" id="co-n"></span><h2 id="co-title"></h2><button type="button" class="close" id="co-close">Close</button></div>
+      <div class="callout-body" id="co-body"></div>
+    </aside>
+
+    <section class="report-mini ran" id="ran" aria-labelledby="ran-h">
+      <div class="panel-t"><h3 id="ran-h">What the engine did with these files</h3><span id="run-stamp" role="status" aria-live="polite"></span></div>
+      <div class="ran-body" id="ran-body"></div>
+      <div class="btnrow"><a class="btn solid" id="ran-open" href="reports/messy.html">Open the full report</a><button class="btn" id="ran-held" type="button">See what was held back</button></div>
+    </section>
+    <p class="lede ran-note"><b>Why not just give the files to an AI model?</b> A model can give a confident answer when a month is missing or a subtotal is wrong, and nothing in it tells you which numbers to trust. Client work needs every figure traced to its source and every gap flagged, so the split above is how I built it. Before this, a full client report at StepUp took one to two weeks (my estimate).</p>
+
     <ul class="legend" aria-label="Symbol legend">
       <li class="lt">Legend</li>
       <li><svg width="30" height="22" viewBox="0 0 30 22" aria-hidden="true"><path class="ink" d="M2 4H12M2 11H12M2 18H12M12 4V18M12 11H28"/></svg>Source file</li>
@@ -535,16 +602,12 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
       <li><svg width="62" height="18" viewBox="0 0 62 18" aria-hidden="true"><circle class="ldot" cx="9" cy="9" r="7" style="fill:var(--on);stroke:var(--on)"/><circle class="ldot" cx="31" cy="9" r="7" style="fill:url(#half);stroke:var(--on)"/><circle class="ldot" cx="53" cy="9" r="7" style="fill:var(--trip-bg);stroke:var(--trip)"/></svg>Analysis: computed, partial, blocked</li>
     </ul>
 
-    <aside class="callout" id="callout" hidden aria-live="polite" aria-labelledby="co-title">
-      <div class="callout-head"><span class="bubble" id="co-n"></span><h2 id="co-title"></h2><button type="button" class="close" id="co-close">Close</button></div>
-      <div class="callout-body" id="co-body"></div>
-    </aside>
-    <svg class="leader" id="leader" aria-hidden="true"></svg>
+    <details class="raw" id="run-raw" hidden><summary>Show raw output</summary><pre class="log" id="run-log" tabindex="0" aria-label="What the engine printed in your browser"></pre></details>
   </div>
 
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
     <div class="w2"><span>Title</span><b>System one-line</b></div><div><span>Dwg no.</span><b>SBAE-001</b></div><div><span>Rev</span><b>A</b></div>
-    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">1 of 7</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">1 of 6</b></div>
   </footer></div>
 </section>
 
@@ -572,7 +635,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
   </div>
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
     <div class="w2"><span>Title</span><b>Before and after</b></div><div><span>Dwg no.</span><b>SBAE-002</b></div><div><span>Rev</span><b>A</b></div>
-    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">2 of 7</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="tb.ver" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">2 of 6</b></div>
   </footer></div>
 </section>
 
@@ -595,7 +658,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
   </div>
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
     <div class="w2"><span>Title</span><b>The checker</b></div><div><span>Dwg no.</span><b>SBAE-003</b></div><div><span>Rev</span><b>A</b></div>
-    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="fail" style="font-style:normal">FAIL (example)</i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">3 of 7</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="fail" style="font-style:normal">FAIL (example)</i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">3 of 6</b></div>
   </footer></div>
 </section>
 
@@ -603,7 +666,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
 <section class="sheet" id="sheet-4" aria-labelledby="h-4">
   <div class="sheet-head">
     <h2 id="h-4">This repo is one slice of a larger system.</h2>
-    <p class="lede">At StepUp &amp; Company, a three-person advisory firm I co-founded, I designed and built the full platform with AI coding tools. It is proprietary, so none of its code, screens or data is here. The dashed boundaries show what I rebuilt from scratch. The numbers about the real platform are self-reported from my own project records.</p>
+    <p class="lede">At StepUp &amp; Company, a three-person advisory firm, I designed and built the full platform with AI coding tools. It is proprietary, so none of its code, screens or data is here. The dashed boundaries show what I rebuilt from scratch. The numbers about the real platform are self-reported from my own project records.</p>
   </div>
   <div class="plat-h scrollx">
   <svg class="plat" viewBox="0 0 1240 310" role="group" aria-label="One-line diagram of the full StepUp platform. Client files feed ingestion, checks, a company database, 46 analyses, a release gate and a report. This repo rebuilds the parts inside the dashed boundaries. Drawing notes 1 to 4 below give the real scale." aria-describedby="plat-text">
@@ -629,7 +692,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
     <text class="cap" x="420" y="240">flag, do not guess</text><text class="cap" x="420" y="258"><tspan data-b="p.flags"></tspan> held (messy)</text>
     <text class="nm" x="590" y="140" style="fill:var(--ink2)">COMPANY DATABASE</text>
     <rect class="ghost" x="568" y="168" width="44" height="44"/><path class="ghost" d="M578 182h24M578 190h24M578 198h24"/>
-    <text class="cap" x="590" y="240">one write path</text><text class="cap" x="590" y="258">not rebuilt here</text>
+    <text class="cap" x="590" y="240">not rebuilt here</text>
     <text class="nm" x="780" y="140">46 ANALYSES</text>
     <rect class="off" x="758" y="168" width="44" height="44"/><path class="ink" d="M768 180H792M768 190H792M768 200H792"/>
     <circle class="bub" cx="780" cy="118" r="10"/><text class="bubt" x="780" y="122">1</text>
@@ -654,7 +717,7 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
   </ol>
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
     <div class="w2"><span>Title</span><b>Full platform, one-line</b></div><div><span>Dwg no.</span><b>SBAE-004</b></div><div><span>Rev</span><b>A</b></div>
-    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">4 of 7</b></div>
+    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">4 of 6</b></div>
   </footer></div>
 </section>
 
@@ -689,72 +752,33 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
     <p class="sr" id="lic-text" hidden></p>
   </div>
   <div class="panel-t" style="margin-top:30px"><h3>Findings, by category</h3><span class="dl" id="lic-asof"></span></div>
-  <table class="ft"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col></colgroup>
-    <thead><tr><th>Finding</th><th>Seats</th><th>Monthly</th><th>Action</th><th>Source cells</th></tr></thead><tbody id="lic-rows"></tbody></table>
+  <table class="ft"><colgroup><col class="c1"><col class="c2"><col class="c3"><col></colgroup>
+    <thead><tr><th>Finding</th><th>Seats</th><th>Monthly</th><th>Action</th></tr></thead><tbody id="lic-rows"></tbody></table>
+  <details class="raw" id="lic-src"><summary>Show where each finding came from</summary><pre class="log" id="lic-srclog" tabindex="0" aria-label="The file, sheet and cell behind each finding"></pre></details>
   <p class="savings" id="lic-save"></p>
   <p class="summary" id="lic-summary" style="margin-top:14px;max-width:84ch"></p>
   <div class="lic-notes">
-    <div><h3>Why plain code, not AI</h3><p>Matching seats to the roster and the usage log is deterministic, so it is code I can test. The summary here is written by a template, not a model, and a separate verifier checks every number in it against the findings.</p></div>
+    <div><h3>Why plain code, not AI</h3><p>Matching seats to the roster and the usage log follows fixed rules, so it is code I can test. The summary here is written by a template, not a model, and a separate verifier checks every number in it against the findings.</p></div>
     <div><h3>How I would measure it</h3><ul class="measure"><li>Seats reclaimed per month.</li><li>Monthly cost recovered.</li><li>Days from a termination to the seat being reclaimed.</li></ul></div>
   </div>
   <div class="btnrow" style="margin-top:22px"><a class="btn solid" href="reports/licenses.html">Open the full report</a><a class="btn" href="reports/licenses-actions.csv">Open actions.csv</a></div>
   <p class="fn" id="fn-1"><sup>1</sup> San Antonio Report, <a href="https://sanantonioreport.org/silicon-valley-manufacturer-iem-200m-factory-brooks-san-antonio/">sanantonioreport.org/silicon-valley-manufacturer-iem-200m-factory-brooks-san-antonio</a>.</p>
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
     <div class="w2"><span>Title</span><b>AI license and access reconciler</b></div><div><span>Dwg no.</span><b>SBAE-005</b></div><div><span>Rev</span><b>A</b></div>
-    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="l.tb" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">5 of 7</b></div>
+    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Checked by</span><b>Verifier <i class="vstat" data-b="l.tb" style="font-style:normal"></i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">5 of 6</b></div>
   </footer></div>
 </section>
 
 <!-- SHEET 6 -->
 <section class="sheet" id="sheet-6" aria-labelledby="h-6">
   <div class="sheet-head">
-    <h2 id="h-6">For engineers: the stack, the data model, and one figure traced end to end.</h2>
-    <p class="lede">Plain Python, no framework. The analysis and license sheets are generated from the engine's own output, and the trace on the right is built from a real run, not typed.</p>
-  </div>
-  <div class="two">
-    <div>
-      <div class="panel-t"><h3>Data model</h3></div>
-      <div class="plat-h">
-        <svg class="diagram" viewBox="0 0 640 150" role="img" aria-label="Four stages in a row: a Sheet of plain rows, a Ledger of figures with sources, a Result of metrics with a status, and a Verdict on the summary.">
-          <path class="base" d="M95 70H150M270 70H325M445 70H500"/><path class="live on" pathLength="1" d="M95 70H150M270 70H325M445 70H500"/>
-          <g><text class="nm" x="60" y="26">SHEET</text><rect class="node" data-state="on" x="38" y="48" width="44" height="44"/><path class="ink" d="M48 62H72M48 70H72M48 78H72"/><text class="cap" x="60" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">read.py</text></g>
-          <g><text class="nm" x="210" y="26">LEDGER</text><rect class="node" data-state="on" x="188" y="48" width="44" height="44"/><path class="ink" d="M198 62H222M198 70H222M198 78H222"/><text class="cap" x="210" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">model.py</text></g>
-          <g><text class="nm" x="385" y="26">RESULT</text><rect class="node" data-state="on" x="363" y="48" width="44" height="44"/><path class="ink" d="M373 62H397M373 70H397M373 78H397"/><text class="cap" x="385" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">analyses.py</text></g>
-          <g><text class="nm" x="560" y="26">VERDICT</text><rect class="node" data-state="on" x="534" y="44" width="52" height="52"/><path class="xmark" data-state="on" d="M544 54L576 86M576 54L544 86"/><text class="cap" x="560" y="116" style="font-size:12.5px;text-anchor:middle;fill:var(--ink2)">verify.py</text></g>
-        </svg>
-      </div>
-      <div class="plat-v" id="eng-v"></div>
-      <dl class="kv" style="margin-top:16px">
-        <dt>Sheet</dt><dd>One file or sheet as plain rows. Nothing is interpreted.</dd>
-        <dt>Ledger</dt><dd>Every figure is a value or None, with its source cell and a named reason when it is None.</dd>
-        <dt>Result</dt><dd>Metrics with a unit and a status: computed, partial or blocked.</dd>
-        <dt>Verdict</dt><dd>Pass or fail on the summary, with the problems listed.</dd>
-      </dl>
-      <div class="panel-t" style="margin-top:28px"><h3>Stack, tests, failure</h3></div>
-      <dl class="kv" id="eng-facts"></dl>
-    </div>
-    <div>
-      <div class="panel-t"><h3>One figure, cell to verifier</h3><span class="dl" id="eng-key"></span></div>
-      <ol class="trace" id="eng-trace"></ol>
-    </div>
-  </div>
-  <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
-    <div class="w2"><span>Title</span><b>For engineers</b></div><div><span>Dwg no.</span><b>SBAE-006</b></div><div><span>Rev</span><b>A</b></div>
-    <div><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Gate</span><b><i class="pass" style="font-style:normal">PASS</i></b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">6 of 7</b></div>
-  </footer></div>
-</section>
-
-<!-- SHEET 7 -->
-<section class="sheet" id="sheet-7" aria-labelledby="h-7">
-  <div class="sheet-head">
-    <h2 id="h-7">General notes: the decisions, and why I sent this.</h2>
+    <h2 id="h-6">General notes: the decisions, and why I sent this.</h2>
   </div>
   <div class="notes3">
     <ol class="nlist">
       <li><div><b>Flags, not guesses.</b> A missing April could be filled with an average and the report would look complete. It would also hide the one thing the owner most needs to know. A flagged gap costs a phone call. A hidden estimate can cost a bad decision.</div></li>
       <li><div><b>Plain code does the arithmetic.</b> In the main engine Claude can draft the summary when an API key is set; every report on this site uses the plain template. One real Claude draft, checked by the verifier, is in <a href="https://github.com/santiagomesa200/small-business-analytics-engine/tree/main/docs/ai-draft-example">the repo</a>: the verifier passed it. Reading numbers, checking subtotals and doing arithmetic have exact right answers, so they are plain code I can test.</div></li>
       <li><div><b>A separate checker.</b> The drafter never grades its own work. If the check fails, the report says the summary was blocked and why.</div></li>
-      <li><div><b>A release gate.</b> <code class="mono">python -m engine.gate</code> runs the tests and the contract checks. Every figure has a source, every gap has a named reason, and no imputation call exists in the code.</div></li>
       <li><div><b>What I would measure in production.</b> Hours from file drop to first report. Flagged figures per run and how many a person confirmed. How often an analysis is blocked and why. How often the verifier rejects a draft.</div></li>
     </ol>
     <div class="side">
@@ -763,9 +787,8 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
         <p>I start with the process: how the owner really keeps the numbers. Then I build the version that works, with a separate check on it that does not trust the draft. Sheet 3 shows that check rejecting a summary with a made-up number.</p>
       </div>
       <div>
-        <h3>Run it yourself</h3>
-        <pre class="run mono">make check
-.venv/bin/python run.py data/sample</pre>
+        <h3>For engineers</h3>
+        <p>The commands, the tests and the data model are in the <a href="https://github.com/santiagomesa200/small-business-analytics-engine#readme">README</a> on GitHub.</p>
       </div>
       <div>
         <h3>What this is not</h3>
@@ -780,13 +803,13 @@ pre.run{margin:10px 0 0;border:1px solid var(--hair);background:var(--sheet);pad
     </div>
   </div>
   <div class="tbwrap"><footer class="tb" aria-label="Drawing title block">
-    <div class="w2"><span>Title</span><b>General notes</b></div><div><span>Dwg no.</span><b>SBAE-007</b></div><div><span>Rev</span><b>A</b></div>
-    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">7 of 7</b></div>
+    <div class="w2"><span>Title</span><b>General notes</b></div><div><span>Dwg no.</span><b>SBAE-006</b></div><div><span>Rev</span><b>A</b></div>
+    <div class="w2"><span>Drawn by</span><b>S. Mesa Rodriguez</b></div><div><span>Date</span><b class="sheetno">2026-11-09</b></div><div><span>Sheet</span><b class="sheetno">6 of 6</b></div>
   </footer></div>
 </section>
 </main>
 
-<!--SITE-DATA--><script id="site-data" type="application/json">{"scenarios":{"messy":{"folder":"data/sample","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":83,"thousands_sheets":1},"figures":{"total":95,"usable":89,"flagged":6},"flags":[{"figure":"pnl.revenue.2025-04","label":"Net sales, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"figure":"pnl.cogs.2025-04","label":"Cost of goods sold, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["supplier payment days","inventory days"],"fix":"send the April column"},{"figure":"pnl.gross_profit.2025-04","label":"Gross profit, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"figure":"pnl.opex.2025-04","label":"Operating expenses, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":[],"fix":"send the April column"},{"figure":"pnl.ebitda.2025-04","label":"EBITDA, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["valuation range from an EBITDA multiple"],"fix":"send the April column"},{"figure":"pnl.gross_profit.2025-05","label":"Gross profit, May","kind":"subtotal_mismatch","cell":"E6","reason":"The file says $168,519; its parts add up to $159,519.","unblocks":["May gross margin"],"fix":"confirm the right figure with whoever prepared the file"}],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"absent","a":""},{"t":"May-25","k":"","a":"E3"},{"t":"Jun-25","k":"","a":"F3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"","k":"absent","a":""},{"t":"393,875","k":"","a":"E4"},{"t":"404,450","k":"","a":"F4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"","k":"absent","a":""},{"t":"(234,356)","k":"fixed","a":"E5"},{"t":"(242,670)","k":"fixed","a":"F5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"","k":"absent","a":""},{"t":"168,519","k":"trip","a":"E6"},{"t":"161,780","k":"","a":"F6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"","k":"absent","a":""},{"t":"(142,100)","k":"fixed","a":"E7"},{"t":"(139,500)","k":"fixed","a":"F7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"","k":"absent","a":""},{"t":"17,419","k":"","a":"E8"},{"t":"22,280","k":"","a":"F8"}]],"gap_at":4},"attention":[{"text":"April is missing from the Monthly P&L. This blocks: April gross margin, supplier payment days, inventory days, valuation range from an EBITDA multiple. Fix: send the April column.","figures":"pnl.revenue.2025-04, pnl.cogs.2025-04, pnl.gross_profit.2025-04, pnl.opex.2025-04, pnl.ebitda.2025-04"},{"text":"May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file.","figures":"pnl.gross_profit.2025-05"}],"counts":{"computed":2,"partial":2,"blocked":1,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","status":"partial","why":"April's figures are missing and May's subtotal does not add up","fix":"send the April column and confirm the right figure with whoever prepared the file","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":null,"why":"April's figures are missing","source":"pnl_2025_h1.xlsx | Monthly P&L"},{"label":"Gross margin, May","value":null,"why":"May's subtotal does not add up","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Change, first to last month","value":null,"why":"a month in the range is flagged","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +6 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","status":"partial","why":"April's figures are missing","fix":"send the April column","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"DIO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"Cash conversion cycle","value":null,"why":"one of the measures above is missing","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","status":"blocked","why":"April's figures are missing","fix":"send the April column","metrics":[],"assumptions":[]}],"summary":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":10},"report":{"strip":[["figures read","95"],["need attention","2"],["analyses fully computed","2 of 5"],["verifier","PASS"]]},"trace":[{"stage":"READ","file":"engine/read.py","text":"pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."},{"stage":"NORMALIZE","file":"engine/normalize.py","text":"168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."},{"stage":"EXTRACT","file":"engine/extract.py","text":"Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."},{"stage":"CHECK","file":"engine/checks.py","text":"May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."},{"stage":"ANALYZE","file":"engine/analyses.py","text":"Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."},{"stage":"DRAFT","file":"engine/summarize.py","text":"The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."},{"stage":"VERIFY","file":"engine/verify.py","text":"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."},{"stage":"REPORT","file":"engine/report.py","text":"Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."}]},"clean":{"folder":"data/clean","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":85,"thousands_sheets":1},"figures":{"total":95,"usable":95,"flagged":0},"flags":[],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"","a":"E3"},{"t":"May-25","k":"","a":"F3"},{"t":"Jun-25","k":"","a":"G3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"378,850","k":"","a":"E4"},{"t":"393,875","k":"","a":"F4"},{"t":"404,450","k":"","a":"G4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"(223,522)","k":"fixed","a":"E5"},{"t":"(234,356)","k":"fixed","a":"F5"},{"t":"(242,670)","k":"fixed","a":"G5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"155,328","k":"","a":"E6"},{"t":"159,519","k":"","a":"F6"},{"t":"161,780","k":"","a":"G6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"(137,300)","k":"fixed","a":"E7"},{"t":"(142,100)","k":"fixed","a":"F7"},{"t":"(139,500)","k":"fixed","a":"G7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"18,028","k":"","a":"E8"},{"t":"17,419","k":"","a":"F8"},{"t":"22,280","k":"","a":"G8"}]],"gap_at":null},"attention":[],"counts":{"computed":5,"partial":0,"blocked":0,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","status":"computed","why":"","fix":"","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, May","value":"40.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: G6, G4"},{"label":"Change, first to last month","value":"-2.0 pp","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +8 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","status":"computed","why":"","fix":"","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":"54.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"DIO","value":"94.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"Cash conversion cycle","value":"84.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","status":"computed","why":"","fix":"","metrics":[{"label":"Annualized EBITDA","value":"$199,814","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (low)","value":"4.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (high)","value":"6.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Net debt","value":"-$262,300","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (low)","value":"$1,061,556","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (mid)","value":"$1,261,370","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (high)","value":"$1,461,184","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"}],"assumptions":["EBITDA multiples of 4.0x, 5.0x and 6.0x are illustrative assumptions, not market comparables.","Annualized EBITDA = the 6 months in the P&L scaled to 12 months. Seasonality is not adjusted.","Net debt = line of credit (bank statement PDF) minus cash (balance sheet). Equity = multiple x EBITDA - net debt."]}],"summary":"Gross margin went from 42.0% to 40.0% over the period, a change of -2.0 pp [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay, suppliers are paid in about 54.4 days, inventory sits for about 94.4 days and the cash conversion cycle is 84.8 days [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. At 4.0x to 6.0x annualized EBITDA of $199,814, equity value is $1,061,556 to $1,461,184 [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":19},"report":{"strip":[["figures read","95"],["need attention","0"],["analyses fully computed","5 of 5"],["verifier","PASS"]]},"trace":null}},"rejection":{"parts":[{"t":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed","bad":false,"good":""},{"t":"$31,000","bad":true,"good":"$24,125"},{"t":"and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about","bad":false,"good":""},{"t":"44.8 days","bad":true,"good":"7.1 months"},{"t":"of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","bad":false,"good":""}],"verdict":"Verifier result: FAIL - summary blocked","problems":["number $31,000 is not a figure of price_volume: 'Revenue changed by $87,325 between the first and second half...'","number 44.8 days is not a figure of cash_runway: 'Cash fell from $586,000 to $412,300, burning about $57,900 a...'"],"rules":["The summary has one sentence per analysis, and no sentence is repeated.","Every sentence ends with a citation like [cash_runway] naming a real analysis, and each analysis is cited exactly once.","Every number must equal a figure computed by the analysis that sentence cites, and carry the same unit ($, %, days, months, pp, x).","A blocked analysis may not have any number stated for it, and must be described as \"not computed\".","A metric that was not computed may not be mentioned without saying \"not computed\".","A bare four-digit year is allowed only if it appears in that analysis's period labels."]},"licenses":{"asof":"2025-06-30","files":6,"actions":21,"seats":83,"people":120,"flagged":21,"categories":[{"id":"terminated_holder","title":"Seats held by employees who have left","action":"reclaim","count":6,"monthly":210.0,"findings":[{"email":"Marcus.Brooks@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Marcus Brooks left on 2025-02-07","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A2","hr_roster.xlsx | Roster | A12"]},{"email":"Lena.Nguyen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Lena Nguyen left on 2025-05-03","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A2","hr_roster.xlsx | Roster | A77"]},{"email":"grace.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Grace Nguyen left on 2025-05-26","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A4","hr_roster.xlsx | Roster | A35"]},{"email":"sam.foster@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Sam Foster left on 2025-04-27","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A3","hr_roster.xlsx | Roster | A14"]},{"email":"dev.ortiz@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Dev Ortiz left on 2025-02-09","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A5","hr_roster.xlsx | Roster | A68"]},{"email":"luis.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Luis Ortiz left on 2025-03-19","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A3","hr_roster.xlsx | Roster | A89"]}]},{"id":"duplicate_seat","title":"Duplicate seats","action":"reclaim","count":1,"monthly":30.0,"findings":[{"email":"JUNE.PATEL@EXAMPLE.COM","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"June Patel already holds a ChatPilot seat","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A36","seats_chatpilot.csv | table | A6"]}]},{"id":"unused_seat","title":"Seats with no use for 30+ days","action":"confirm with manager","count":10,"monthly":282.0,"findings":[{"email":"elena.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-07, 84 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A4","usage_log.csv | table | A15"]},{"email":"isla.hughes@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-15, 76 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A5","usage_log.csv | table | A16"]},{"email":"ana.okafor@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-03-24, 98 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A6","usage_log.csv | table | A17"]},{"email":"diego.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A9","usage_log.csv | table | A18"]},{"email":"Jordan.Ortiz@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-13, 109 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A2","usage_log.csv | table | A10"]},{"email":"rosa.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-03, 119 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A4","usage_log.csv | table | A13"]},{"email":"mateo.patel@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-03-20, 102 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A8","usage_log.csv | table | A11"]},{"email":"jordan.brooks@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-11, 111 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A5","usage_log.csv | table | A14"]},{"email":"tara.hughes@example.com","tool":"CodeAssist","plan":"Business","cost":null,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":false,"sources":["seats_codeassist.csv | table | A3","usage_log.csv | table | A12"]},{"email":"Rosa.Foster@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-16, 45 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A7","usage_log.csv | table | A9"]}]},{"id":"no_approval","title":"Access with no approval on file","action":"request approval","count":3,"monthly":0,"findings":[{"email":"luis.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Luis Nguyen has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_chatpilot.csv | table | A10"]},{"email":"ana.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Ana Patel has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A6"]},{"email":"Sam.Okafor@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Sam Okafor has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A7"]}]},{"id":"usage_unknown","title":"Seats with no usable usage data","action":"investigate","count":0,"monthly":0,"findings":[]},{"id":"unresolvable","title":"Seats that match no employee","action":"investigate","count":1,"monthly":0,"findings":[{"email":"Rob.Chen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"this email is not in the HR roster; no match was assumed","action":"investigate","counted":false,"sources":["seats_documind.csv | table | A27"]}]}],"monthly":522.0,"annual":6264.0,"counted":16,"summary":"6 seats are held by employees who have left; reclaiming them frees $210 a month [terminated_holder]. 10 seats have not been used for a month or more, and $282 a month is recoverable if the managers agree; 1 of them has no cost on file and is not counted [unused_seat]. 1 person holds a second seat for the same tool, worth $30 a month [duplicate_seat]. 3 people have access with no approval on file, so approval should be requested [no_approval], and 1 seat matches no employee, so it is listed for investigation and not counted [unresolvable]. Reclaiming every counted seat would save $522 a month, or $6,264 a year [savings].","verifier":{"ok":true,"problems":[],"numbers_checked":11}},"tests":110,"engineering":{"trace":[{"stage":"READ","file":"engine/read.py","text":"pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."},{"stage":"NORMALIZE","file":"engine/normalize.py","text":"168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."},{"stage":"EXTRACT","file":"engine/extract.py","text":"Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."},{"stage":"CHECK","file":"engine/checks.py","text":"May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."},{"stage":"ANALYZE","file":"engine/analyses.py","text":"Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."},{"stage":"DRAFT","file":"engine/summarize.py","text":"The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."},{"stage":"VERIFY","file":"engine/verify.py","text":"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."},{"stage":"REPORT","file":"engine/report.py","text":"Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."}],"tests":110}}</script><!--/SITE-DATA-->
+<!--SITE-DATA--><script id="site-data" type="application/json">{"scenarios":{"messy":{"folder":"data/sample","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"file_labels":[{"file":"ar_aging_2025-06-30.csv","label":"Customer aging report (CSV)"},{"file":"balance_sheet_2025-06-30.csv","label":"Balance sheet (CSV)"},{"file":"bank_statement_summary.pdf","label":"Bank statement (PDF)"},{"file":"pnl_2025_h1.xlsx","label":"Monthly P&L (Excel)"},{"file":"sales_by_product.csv","label":"Sales by product (CSV)"}],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":83,"thousands_sheets":1},"figures":{"total":95,"usable":89,"flagged":6},"flags":[{"figure":"pnl.revenue.2025-04","label":"Net sales, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","where":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"figure":"pnl.cogs.2025-04","label":"Cost of goods sold, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","where":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["supplier payment days","inventory days"],"fix":"send the April column"},{"figure":"pnl.gross_profit.2025-04","label":"Gross profit, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","where":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["April gross margin"],"fix":"send the April column"},{"figure":"pnl.opex.2025-04","label":"Operating expenses, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","where":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":[],"fix":"send the April column"},{"figure":"pnl.ebitda.2025-04","label":"EBITDA, April","kind":"missing_period","cell":"Monthly P&L, April column (absent)","where":"Monthly P&L, April column (absent)","reason":"April's column is missing from the Monthly P&L.","unblocks":["valuation range from an EBITDA multiple"],"fix":"send the April column"},{"figure":"pnl.gross_profit.2025-05","label":"Gross profit, May","kind":"subtotal_mismatch","cell":"E6","where":"Monthly P&L, cell E6","reason":"The file says $168,519; its parts add up to $159,519.","unblocks":["May gross margin"],"fix":"confirm the right figure with whoever prepared the file"}],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"absent","a":""},{"t":"May-25","k":"","a":"E3"},{"t":"Jun-25","k":"","a":"F3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"","k":"absent","a":""},{"t":"393,875","k":"","a":"E4"},{"t":"404,450","k":"","a":"F4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"","k":"absent","a":""},{"t":"(234,356)","k":"fixed","a":"E5"},{"t":"(242,670)","k":"fixed","a":"F5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"","k":"absent","a":""},{"t":"168,519","k":"trip","a":"E6"},{"t":"161,780","k":"","a":"F6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"","k":"absent","a":""},{"t":"(142,100)","k":"fixed","a":"E7"},{"t":"(139,500)","k":"fixed","a":"F7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"","k":"absent","a":""},{"t":"17,419","k":"","a":"E8"},{"t":"22,280","k":"","a":"F8"}]],"gap_at":4},"attention":[{"text":"April is missing from the Monthly P&L. This blocks: April gross margin, supplier payment days, inventory days, valuation range from an EBITDA multiple. Fix: send the April column.","figures":"pnl.revenue.2025-04, pnl.cogs.2025-04, pnl.gross_profit.2025-04, pnl.opex.2025-04, pnl.ebitda.2025-04"},{"text":"May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file.","figures":"pnl.gross_profit.2025-05"}],"counts":{"computed":2,"partial":2,"blocked":1,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","name":"Gross margin trend","status":"partial","why":"April's figures are missing and May's subtotal does not add up","fix":"send the April column and confirm the right figure with whoever prepared the file","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":null,"why":"April's figures are missing","source":"pnl_2025_h1.xlsx | Monthly P&L"},{"label":"Gross margin, May","value":null,"why":"May's subtotal does not add up","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Change, first to last month","value":null,"why":"a month in the range is flagged","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +6 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","name":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","name":"Working capital","status":"partial","why":"April's figures are missing","fix":"send the April column","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"DIO","value":null,"why":"April's figures are missing","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more"},{"label":"Cash conversion cycle","value":null,"why":"one of the measures above is missing","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +1 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","name":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","name":"Valuation range","status":"blocked","why":"April's figures are missing","fix":"send the April column","metrics":[],"assumptions":[]}],"summary":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":10},"report":{"strip":[["figures read","95"],["need attention","2"],["analyses fully computed","2 of 5"],["verifier","PASS"]]},"trace":[{"stage":"READ","file":"engine/read.py","text":"pnl_2025_h1.xlsx, sheet Monthly P&L, cell E6 holds 168519. Nothing is interpreted yet."},{"stage":"NORMALIZE","file":"engine/normalize.py","text":"168519 becomes the number 168,519. The neighboring cost cell '(234,356)' becomes 234,356, stored as a positive amount."},{"stage":"EXTRACT","file":"engine/extract.py","text":"Ledger key pnl.gross_profit.2025-05 gets the value 168,519 and the source pnl_2025_h1.xlsx | Monthly P&L | E6."},{"stage":"CHECK","file":"engine/checks.py","text":"May revenue 393,875 minus cost of goods 234,356 is 159,519, but the file says 168,519. The ledger value becomes None, the reported 168,519 is kept for the audit trail, and an issue is logged: Gross profit May: file says 168,519 but its parts give 159,519."},{"stage":"ANALYZE","file":"engine/analyses.py","text":"Gross margin, May is not computed (May's subtotal does not add up). The other months still compute, so the analysis status is partial."},{"stage":"DRAFT","file":"engine/summarize.py","text":"The template writes: Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]."},{"stage":"VERIFY","file":"engine/verify.py","text":"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit (42.0% = Gross margin, January; 40.0% = Gross margin, June), and May is described as not computed. Verdict: PASS."},{"stage":"REPORT","file":"engine/report.py","text":"Needs attention: May's gross profit is $168,519 in the file, but its parts add up to $159,519. This blocks: May gross margin. Fix: confirm the right figure with whoever prepared the file. The row in figures.csv has an empty value and the reason."}]},"clean":{"folder":"data/clean","files":["ar_aging_2025-06-30.csv","balance_sheet_2025-06-30.csv","bank_statement_summary.pdf","pnl_2025_h1.xlsx","sales_by_product.csv"],"file_labels":[{"file":"ar_aging_2025-06-30.csv","label":"Customer aging report (CSV)"},{"file":"balance_sheet_2025-06-30.csv","label":"Balance sheet (CSV)"},{"file":"bank_statement_summary.pdf","label":"Bank statement (PDF)"},{"file":"pnl_2025_h1.xlsx","label":"Monthly P&L (Excel)"},{"file":"sales_by_product.csv","label":"Sales by product (CSV)"}],"read":{"files":5,"sheets":6,"rows":60,"text_numbers":85,"thousands_sheets":1},"figures":{"total":95,"usable":95,"flagged":0},"flags":[],"grid":{"title":"Bluebonnet Supply Co. - Monthly P&L (USD)","rows":[[{"t":"Line Item","k":"","a":"A3"},{"t":"Jan-25","k":"","a":"B3"},{"t":"Feb-25","k":"","a":"C3"},{"t":"Mar-25","k":"","a":"D3"},{"t":"Apr-25","k":"","a":"E3"},{"t":"May-25","k":"","a":"F3"},{"t":"Jun-25","k":"","a":"G3"}],[{"t":"Net Sales","k":"","a":"A4"},{"t":"359,700","k":"","a":"B4"},{"t":"348,950","k":"","a":"C4"},{"t":"381,200","k":"","a":"D4"},{"t":"378,850","k":"","a":"E4"},{"t":"393,875","k":"","a":"F4"},{"t":"404,450","k":"","a":"G4"}],[{"t":"Cost of Goods Sold","k":"","a":"A5"},{"t":"(208,626)","k":"fixed","a":"B5"},{"t":"(204,136)","k":"fixed","a":"C5"},{"t":"(224,908)","k":"fixed","a":"D5"},{"t":"(223,522)","k":"fixed","a":"E5"},{"t":"(234,356)","k":"fixed","a":"F5"},{"t":"(242,670)","k":"fixed","a":"G5"}],[{"t":"Gross Profit","k":"","a":"A6"},{"t":"151,074","k":"","a":"B6"},{"t":"144,814","k":"","a":"C6"},{"t":"156,292","k":"","a":"D6"},{"t":"155,328","k":"","a":"E6"},{"t":"159,519","k":"","a":"F6"},{"t":"161,780","k":"","a":"G6"}],[{"t":"Operating Expenses","k":"","a":"A7"},{"t":"(136,200)","k":"fixed","a":"B7"},{"t":"(134,900)","k":"fixed","a":"C7"},{"t":"(138,900)","k":"fixed","a":"D7"},{"t":"(137,300)","k":"fixed","a":"E7"},{"t":"(142,100)","k":"fixed","a":"F7"},{"t":"(139,500)","k":"fixed","a":"G7"}],[{"t":"EBITDA","k":"","a":"A8"},{"t":"14,874","k":"","a":"B8"},{"t":"9,914","k":"","a":"C8"},{"t":"17,392","k":"","a":"D8"},{"t":"18,028","k":"","a":"E8"},{"t":"17,419","k":"","a":"F8"},{"t":"22,280","k":"","a":"G8"}]],"gap_at":null},"attention":[],"counts":{"computed":5,"partial":0,"blocked":0,"total":5},"analyses":[{"id":"gross_margin","title":"Gross margin trend","name":"Gross margin trend","status":"computed","why":"","fix":"","metrics":[{"label":"Gross margin, January","value":"42.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, B4"},{"label":"Gross margin, February","value":"41.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: C6, C4"},{"label":"Gross margin, March","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: D6, D4"},{"label":"Gross margin, April","value":"41.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: E6, E4"},{"label":"Gross margin, May","value":"40.5%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: F6, F4"},{"label":"Gross margin, June","value":"40.0%","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: G6, G4"},{"label":"Change, first to last month","value":"-2.0 pp","why":"","source":"pnl_2025_h1.xlsx | Monthly P&L: B6, C6, D6, E6 +8 more"}],"assumptions":["Gross margin = gross profit / revenue, per month."]},{"id":"price_volume","title":"Price vs volume effect on revenue","name":"Price vs volume effect on revenue","status":"computed","why":"","fix":"","metrics":[{"label":"Revenue, base period","value":"$1,089,850","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Revenue, current period","value":"$1,177,175","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Total change","value":"$87,325","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect","value":"$24,125","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect","value":"$63,200","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Conduit Kit","value":"$25,625","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Conduit Kit","value":"$23,100","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Cable Spool","value":"$7,800","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Cable Spool","value":"$30,600","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Price effect: Safety Gear","value":"-$9,300","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"Volume effect: Safety Gear","value":"$9,500","why":"","source":"sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["Base period 2025-01 to 2025-03; current period 2025-04 to 2025-06.","Price effect = change in average price x current units. Volume effect = change in units x base price. Product mix shows up inside the volume effect.","Revenue here is units x price from the sales file, not the P&L."]},{"id":"working_capital","title":"Working capital (DSO, DPO, DIO)","name":"Working capital","status":"computed","why":"","fix":"","metrics":[{"label":"DSO","value":"44.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B3; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"},{"label":"DPO","value":"54.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"DIO","value":"94.4 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more"},{"label":"Cash conversion cycle","value":"84.8 days","why":"","source":"balance_sheet_2025-06-30.csv | table: B8, B3, B4; pnl_2025_h1.xlsx | Monthly P&L: B5, C5, D5, E5 +2 more; sales_by_product.csv | table: D8, D9, D10, D11 +32 more"}],"assumptions":["DSO = receivables / revenue x days in the sales period. DPO = payables / COGS x days. DIO = inventory / COGS x days. Balance sheet figures are at period end.","Cash conversion cycle = DSO + DIO - DPO."]},{"id":"cash_runway","title":"Cash runway","name":"Cash runway","status":"computed","why":"","fix":"","metrics":[{"label":"Opening cash","value":"$586,000","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Ending cash","value":"$412,300","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Average monthly net burn","value":"$57,900","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"},{"label":"Runway","value":"7.1 months","why":"","source":"bank_statement_summary.pdf | page 1: line 6, line 2, line 3"}],"assumptions":["Burn = (opening - ending cash) / months in the statement. It is assumed to continue unchanged."]},{"id":"valuation","title":"Valuation range from an EBITDA multiple","name":"Valuation range","status":"computed","why":"","fix":"","metrics":[{"label":"Annualized EBITDA","value":"$199,814","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (low)","value":"4.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Multiple (high)","value":"6.0x","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Net debt","value":"-$262,300","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (low)","value":"$1,061,556","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (mid)","value":"$1,261,370","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"},{"label":"Equity value (high)","value":"$1,461,184","why":"","source":"bank_statement_summary.pdf | page 1: line 7; balance_sheet_2025-06-30.csv | table: B2; pnl_2025_h1.xlsx | Monthly P&L: B8, C8, D8, E8 +2 more"}],"assumptions":["EBITDA multiples of 4.0x, 5.0x and 6.0x are illustrative assumptions, not market comparables.","Annualized EBITDA = the 6 months in the P&L scaled to 12 months. Seasonality is not adjusted.","Net debt = line of credit (bank statement PDF) minus cash (balance sheet). Equity = multiple x EBITDA - net debt."]}],"summary":"Gross margin went from 42.0% to 40.0% over the period, a change of -2.0 pp [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed $24,125 and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay, suppliers are paid in about 54.4 days, inventory sits for about 94.4 days and the cash conversion cycle is 84.8 days [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about 7.1 months of runway at that pace [cash_runway]. At 4.0x to 6.0x annualized EBITDA of $199,814, equity value is $1,061,556 to $1,461,184 [valuation].","drafter":"template","verifier":{"ok":true,"problems":[],"sentences":5,"numbers_checked":19},"report":{"strip":[["figures read","95"],["need attention","0"],["analyses fully computed","5 of 5"],["verifier","PASS"]]},"trace":null}},"rejection":{"parts":[{"t":"Gross margin was 42.0% in January and 40.0% in June; April and May are not computed because April's figures are missing and May's subtotal does not add up, so the change over the period is not computed either [gross_margin]. Revenue changed by $87,325 between the first and second half of the period: price contributed","bad":false,"good":""},{"t":"$31,000","bad":true,"good":"$24,125"},{"t":"and volume contributed $63,200 [price_volume]. Customers take about 44.8 days to pay; supplier payment days, inventory days and the cash conversion cycle are not computed because April's figures are missing [working_capital]. Cash fell from $586,000 to $412,300, burning about $57,900 a month, which leaves about","bad":false,"good":""},{"t":"44.8 days","bad":true,"good":"7.1 months"},{"t":"of runway at that pace [cash_runway]. The valuation range from an EBITDA multiple is not computed because April's figures are missing, so no figures are stated for it; send the April column to unblock it [valuation].","bad":false,"good":""}],"verdict":"Verifier result: FAIL - summary blocked","problems":["number $31,000 is not a figure of price_volume: 'Revenue changed by $87,325 between the first and second half...'","number 44.8 days is not a figure of cash_runway: 'Cash fell from $586,000 to $412,300, burning about $57,900 a...'"],"rules":["The summary has one sentence per analysis, and no sentence is repeated.","Every sentence ends with a citation like [cash_runway] naming a real analysis, and each analysis is cited exactly once.","Every number must equal a figure computed by the analysis that sentence cites, and carry the same unit ($, %, days, months, pp, x).","A blocked analysis may not have any number stated for it, and must be described as \"not computed\".","A metric that was not computed may not be mentioned without saying \"not computed\".","A bare four-digit year is allowed only if it appears in that analysis's period labels."]},"licenses":{"asof":"2025-06-30","files":6,"actions":21,"seats":83,"people":120,"flagged":21,"categories":[{"id":"terminated_holder","title":"Seats held by employees who have left","action":"reclaim","count":6,"monthly":210.0,"findings":[{"email":"Marcus.Brooks@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Marcus Brooks left on 2025-02-07","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A2","hr_roster.xlsx | Roster | A12"]},{"email":"Lena.Nguyen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Lena Nguyen left on 2025-05-03","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A2","hr_roster.xlsx | Roster | A77"]},{"email":"grace.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Grace Nguyen left on 2025-05-26","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A4","hr_roster.xlsx | Roster | A35"]},{"email":"sam.foster@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Sam Foster left on 2025-04-27","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A3","hr_roster.xlsx | Roster | A14"]},{"email":"dev.ortiz@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Dev Ortiz left on 2025-02-09","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A5","hr_roster.xlsx | Roster | A68"]},{"email":"luis.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"Luis Ortiz left on 2025-03-19","action":"reclaim","counted":true,"sources":["seats_documind.csv | table | A3","hr_roster.xlsx | Roster | A89"]}]},{"id":"duplicate_seat","title":"Duplicate seats","action":"reclaim","count":1,"monthly":30.0,"findings":[{"email":"JUNE.PATEL@EXAMPLE.COM","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"June Patel already holds a ChatPilot seat","action":"reclaim","counted":true,"sources":["seats_chatpilot.csv | table | A36","seats_chatpilot.csv | table | A6"]}]},{"id":"unused_seat","title":"Seats with no use for 30+ days","action":"confirm with manager","count":10,"monthly":282.0,"findings":[{"email":"elena.ortiz@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-07, 84 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A4","usage_log.csv | table | A15"]},{"email":"isla.hughes@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-04-15, 76 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A5","usage_log.csv | table | A16"]},{"email":"ana.okafor@example.com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"last active 2025-03-24, 98 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_documind.csv | table | A6","usage_log.csv | table | A17"]},{"email":"diego.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A9","usage_log.csv | table | A18"]},{"email":"Jordan.Ortiz@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-13, 109 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A2","usage_log.csv | table | A10"]},{"email":"rosa.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-03, 119 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A4","usage_log.csv | table | A13"]},{"email":"mateo.patel@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-03-20, 102 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A8","usage_log.csv | table | A11"]},{"email":"jordan.brooks@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"last active 2025-03-11, 111 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_codeassist.csv | table | A5","usage_log.csv | table | A14"]},{"email":"tara.hughes@example.com","tool":"CodeAssist","plan":"Business","cost":null,"detail":"last active 2025-05-07, 54 days before 2025-06-30","action":"confirm with manager","counted":false,"sources":["seats_codeassist.csv | table | A3","usage_log.csv | table | A12"]},{"email":"Rosa.Foster@Example.Com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"last active 2025-05-16, 45 days before 2025-06-30","action":"confirm with manager","counted":true,"sources":["seats_chatpilot.csv | table | A7","usage_log.csv | table | A9"]}]},{"id":"no_approval","title":"Access with no approval on file","action":"request approval","count":3,"monthly":0,"findings":[{"email":"luis.nguyen@example.com","tool":"ChatPilot","plan":"Team","cost":30.0,"detail":"Luis Nguyen has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_chatpilot.csv | table | A10"]},{"email":"ana.patel@example.com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Ana Patel has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A6"]},{"email":"Sam.Okafor@Example.Com","tool":"CodeAssist","plan":"Business","cost":19.0,"detail":"Sam Okafor has this seat but no approval is on file","action":"request approval","counted":false,"sources":["seats_codeassist.csv | table | A7"]}]},{"id":"usage_unknown","title":"Seats with no usable usage data","action":"investigate","count":0,"monthly":0,"findings":[]},{"id":"unresolvable","title":"Seats that match no employee","action":"investigate","count":1,"monthly":0,"findings":[{"email":"Rob.Chen@Example.Com","tool":"DocuMind","plan":"Pro","cost":45.0,"detail":"this email is not in the HR roster; no match was assumed","action":"investigate","counted":false,"sources":["seats_documind.csv | table | A27"]}]}],"monthly":522.0,"annual":6264.0,"counted":16,"summary":"6 seats are held by employees who have left; reclaiming them frees $210 a month [terminated_holder]. 10 seats have not been used for a month or more, and $282 a month is recoverable if the managers agree; 1 of them has no cost on file and is not counted [unused_seat]. 1 person holds a second seat for the same tool, worth $30 a month [duplicate_seat]. 3 people have access with no approval on file, so approval should be requested [no_approval], and 1 seat matches no employee, so it is listed for investigation and not counted [unresolvable]. Reclaiming every counted seat would save $522 a month, or $6,264 a year [savings].","verifier":{"ok":true,"problems":[],"numbers_checked":11}},"tests":128}</script><!--/SITE-DATA-->
 <script>
 (function(){
 const DATA=JSON.parse(document.getElementById('site-data').textContent);
@@ -796,37 +819,52 @@ const n=x=>Number(x).toLocaleString('en-US');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const q=new URLSearchParams(location.search);
 if(q.get('theme'))document.documentElement.dataset.theme=q.get('theme');
+let live=null;
 let co=(q.get('company')||q.get('co'))==='clean'?'clean':'messy', openId=null;
 const STAGES={read:[1,'READ'],norm:[2,'NORMALIZE'],ext:[3,'EXTRACT'],check:[4,'CHECK'],ana:[5,'ANALYZE'],ver:[6,'VERIFY'],rep:[7,'REPORT']};
-const D=()=>DATA.scenarios[co];
+const D=()=>live&&live.co===co?live.data:DATA.scenarios[co];  // the one data object every number on the page is drawn from: the live run while it is showing, else the saved run
 const tag=s=>e(s).replace(/\[(\w+)\]/g,(_,id)=>'<span class="cite">'+id.replace(/_/g,' ')+'</span>');
 
-function texts(){
-  const d=D(),c=d.counts,f=d.figures,v=d.verifier;
+function texts(d=D()){
+  const c=d.counts,f=d.figures,v=d.verifier;
   const held=f.flagged;
   return {'src.n':d.read.files,'src.l':'FILES','read.n':d.read.sheets,'read.l':'SHEETS','norm.n':d.read.text_numbers,'norm.l':'CELLS CONVERTED',
    'ext.n':f.total,'ext.l':'FIGURES','check.n':f.usable,'check.l':'PASS','check.held':held?held+' HELD':'NONE HELD','check.heldline':held?held+' HELD, NOT GUESSED':'',
-   'ana.n':c.total,'ana.l':'ANALYSES','ana.legend':c.computed+' COMPUTED, '+c.partial+' PARTIAL, '+c.blocked+' BLOCKED','ana.leg1':c.computed+' COMPUTED, '+c.partial+' PARTIAL','ana.leg2':c.blocked+' BLOCKED',
-   'ver.n':v.ok?'PASS':'FAIL','ver.l':v.numbers_checked+' NUMBERS CHECKED','rep.n':c.computed+' OF '+c.total,'rep.l':'FULLY COMPUTED',
+   'ana.n':c.total,'ana.l':'ANALYSES','ana.legend':[[c.computed,'COMPUTED'],[c.partial,'PARTIAL'],[c.blocked,'BLOCKED']].filter(x=>x[0]).map(x=>x[0]+' '+x[1]).join(', '),
+   'ver.n':v.ok?'PASS':'FAIL','ver.l':v.numbers_checked+' CHECKED','rep.n':c.computed+' OF '+c.total,'rep.l':'FULLY COMPUTED',
    'tb.ver':v.ok?'PASS':'FAIL','p.flags':DATA.scenarios.messy.figures.flagged,'p.ana':c.total+' of 46','p.ana2':c.total,'p.tests':DATA.tests+' tests'};
 }
-function summaryLine(){
-  const d=D(),c=d.counts,f=d.figures;
+function summaryLine(d=D()){
+  const c=d.counts,f=d.figures;
   return (co==='messy'?'Messy company':'Clean company')+': '+d.read.files+' source files, '+f.total+' figures read, '+f.usable+' usable, '+f.flagged+' held at the CHECK breaker. Analyses: '+c.computed+' computed, '+c.partial+' partial, '+c.blocked+' blocked. Independent verifier: '+(d.verifier.ok?'pass':'fail')+'.';
+}
+const GROUPS=['src','read','norm','ext','check','ana','ver','rep'];
+function paint(g,d){
+  const t=texts(d),w=$('#dwrap');
+  $$('#dwrap [data-b]').forEach(el=>{const k=el.dataset.b;if(k.split('.')[0]===g&&k in t){el.textContent=t[k];el.classList.remove('wait');}});
+  $$('.stage[data-stage="'+g+'"] [data-was]').forEach(el=>{el.dataset.state=el.dataset.was;delete el.dataset.was;});
+  if(g==='check'){
+    const held=d.figures.flagged>0;
+    w.classList.remove('is-blank');w.classList.toggle('is-messy',held);w.classList.toggle('is-clean',!held);
+    $$('.stage[data-stage="check"] .node[data-state],.stage[data-stage="check"] .xmark[data-state]').forEach(el=>el.dataset.state=held?'trip':'on');
+  }
+  if(g==='ana')$$('[data-mini]').forEach(el=>{const a=d.analyses[el.dataset.mini];el.dataset.state=a.status;el.innerHTML='<title>'+e(a.title+': '+a.status)+'</title>';});
+  if(g==='ver'){
+    $$('#n-ver,#x-ver').forEach(el=>el.dataset.state=d.verifier.ok?'on':'trip');
+    $$('#sheet-1 .vstat').forEach(el=>{el.textContent=t['tb.ver'];el.className='vstat '+(d.verifier.ok?'pass':'fail');});
+  }
 }
 function renderDiagram(first){
   const d=D(),t=texts();
+  GROUPS.forEach(g=>paint(g,d));
   $$('[data-b]').forEach(el=>{const k=el.dataset.b;if(k in t)el.textContent=t[k];});
   $$('.vstat').forEach(el=>{el.textContent=t['tb.ver'];el.className='vstat '+(d.verifier.ok?'pass':'fail');});
-  const held=d.figures.flagged>0;
-  $('#dwrap').classList.toggle('is-messy',held);$('#dwrap').classList.toggle('is-clean',!held);
-  $$('#n-check,#x-check').forEach(el=>el.dataset.state=held?'trip':'on');
-  $$('#n-ver,#x-ver').forEach(el=>el.dataset.state=d.verifier.ok?'on':'trip');
-  $$('[data-mini]').forEach(el=>{const a=d.analyses[el.dataset.mini];el.dataset.state=a.status;el.innerHTML='<title>'+e(a.title+': '+a.status)+'</title>';});
   $('#dtext').textContent=summaryLine();
   $('#plat-text').textContent='Real platform: 46 analyses, a release gate that blocked a bad release, a second AI model checking outputs. This repo rebuilds '+d.counts.total+' analyses and a gate.';
+  renderRan();
   energize(first);
 }
+addEventListener('animationend',ev=>{if(ev.target.classList)ev.target.classList.remove('kick');});  // the bolt ends in its resting style, the same as before any run
 function energize(first){
   const lives=$$('[data-live]'),w=$('#dwrap');
   const held=$$('.held-line');
@@ -841,6 +879,14 @@ function energize(first){
 }
 
 /* callout */
+const lower=w=>/^[A-Z]{2,}\b/.test(w)?w:w.charAt(0).toLowerCase()+w.slice(1);
+function heldLine(items){  // held figures in plain text: one line per missing month, one per single figure
+  const gone=items.filter(x=>x.kind==='missing_period'),rest=items.filter(x=>x.kind!=='missing_period');
+  const lines=[];
+  if(gone.length)lines.push('Missing for '+gone[0].label.split(', ').pop()+': '+gone.map(x=>lower(x.label.split(', ')[0])).join(', ')+'.');
+  rest.forEach(x=>lines.push(e(x.label)+' ('+e(x.where)+')'));
+  return lines.map(l=>'<p class="heldline">'+(gone.length&&l.startsWith('Missing')?e(l):l)+'</p>').join('');
+}
 function chip(c,t){return '<span class="chip '+c+'">'+e(t)+'</span>';}
 function bodyFor(id){
   const d=D(),f=d.figures,fd=co==='clean'?'clean':'sample';
@@ -853,7 +899,7 @@ function bodyFor(id){
   if(id==='check'){
     if(!d.flags.length)return {t:'CHECK: nothing tripped',h:'<p class="big">All '+f.total+' figures passed the subtotal, balance sheet and cross-file checks. Nothing is held back.</p>'};
     const groups=[];d.flags.forEach(x=>{let g=groups.find(y=>y.reason===x.reason&&y.fix===x.fix);if(!g){g={reason:x.reason,fix:x.fix,items:[],unblocks:[]};groups.push(g);}g.items.push(x);x.unblocks.forEach(u=>{if(!g.unblocks.includes(u))g.unblocks.push(u);});});
-    return {t:'CHECK: '+f.flagged+' figures held',h:groups.map(g=>'<div class="group"><p class="big">'+e(g.reason)+'</p><div class="chips">'+g.items.map(x=>'<span class="chip trip" title="'+e(x.figure)+'">'+e(x.label)+' &nbsp;'+e(x.cell)+'</span>').join('')+'</div><dl class="kv"><dt>Stops</dt><dd>'+e(g.unblocks.join(', ')||'nothing else')+'</dd><dt>To unblock</dt><dd>'+e(g.fix)+'</dd></dl></div>').join('')+'<p class="src">The values stay empty. Nothing is averaged or carried forward.</p>'};
+    return {t:'CHECK: '+f.flagged+' figures held',h:groups.map(g=>'<div class="group"><p class="big">'+e(g.reason)+'</p>'+heldLine(g.items)+'<dl class="kv"><dt>Stops</dt><dd>'+e(g.unblocks.join(', ')||'nothing else')+'</dd><dt>To unblock</dt><dd>'+e(g.fix)+'</dd></dl></div>').join('')+'<p class="src">The values stay empty. Nothing is averaged or carried forward.</p>'};
   }
   if(id==='ana')return {t:'ANALYZE: '+d.counts.computed+' computed, '+d.counts.partial+' partial, '+d.counts.blocked+' blocked',h:
     '<ul class="alist">'+d.analyses.map(a=>{const ok=a.metrics.filter(m=>m.value!==null);const cls=a.status==='computed'?'on':a.status==='partial'?'partial':'trip';
@@ -867,32 +913,59 @@ function rejects(){
   const r=DATA.rejection,bad=r.parts.filter(p=>p.bad);
   return '<div class="group"><h3 style="margin:0">What it rejects</h3><ul class="alist">'+bad.map((p,i)=>'<li><span><s class="wrong">'+e(p.t)+'</s> should read <span class="right">'+e(p.good)+'</span></span><span class="src">'+e((r.problems[i]||'').split(':')[0])+'.</span></li>').join('')+'</ul><p><a href="#sheet-3">See the full rejected draft on sheet 3.</a></p></div>';
 }
-function openStage(id,fromKey){
-  if(openId===id){closeCallout();return;}
+function openStage(id,o={}){
+  if(openId===id&&!o.force){closeCallout();return;}
   openId=id;const b=bodyFor(id),box=$('#callout');
   $('#co-n').textContent=STAGES[id][0];$('#co-title').textContent=b.t;$('#co-body').innerHTML=b.h;box.hidden=false;
   $$('.stage').forEach(g=>g.setAttribute('aria-expanded',g.dataset.stage===id));
-  placeLeader();
-  if(matchMedia('(max-width:900px)').matches)box.scrollIntoView({behavior:reduced?'auto':'smooth',block:'nearest'});
+  if(!o.auto)bringIntoView(box,id);
 }
-function closeCallout(){openId=null;$('#callout').hidden=true;$$('.stage').forEach(g=>g.setAttribute('aria-expanded','false'));$('#leader').innerHTML='';}
-function placeLeader(){
-  const L=$('#leader');L.innerHTML='';
-  if(!openId||matchMedia('(max-width:900px)').matches)return;
-  const g=$$('.stage[data-stage="'+openId+'"]').find(x=>x.getBoundingClientRect().width>0);if(!g)return;
-  const w=$('#dwrap').getBoundingClientRect(),r=$('.node',g).getBoundingClientRect(),c=$('#callout').getBoundingClientRect();
-  const x=r.right-w.left-4,y0=r.bottom-w.top,y1=c.top-w.top;
-  L.setAttribute('viewBox','0 0 '+w.width+' '+w.height);
-  L.innerHTML='<circle cx="'+x+'" cy="'+(y0-4)+'" r="3.2"/><path d="M'+x+' '+(y0-4)+'V'+(y1-11)+'"/><circle cx="'+x+'" cy="'+(y1)+'" r="11" style="fill:var(--sheet);stroke:var(--ink);stroke-width:1.2"/><text x="'+x+'" y="'+(y1+4)+'" text-anchor="middle" style="font:500 12px var(--mono);fill:var(--ink)">'+STAGES[openId][0]+'</text>';
+function bringIntoView(box,id){  // the clicked stage's tile and the top of the details box both on screen, if they fit together
+  const tile=$$('.stage[data-stage="'+id+'"] .tile').find(x=>x.getBoundingClientRect().width>0),c=box.getBoundingClientRect();
+  if(!tile)return;
+  const t=tile.getBoundingClientRect(),need=c.top+Math.min(c.height,160)-t.top,room=innerHeight-24;
+  if(t.top>=8&&c.top+Math.min(c.height,160)<=innerHeight-8)return;
+  const top=scrollY+(need<=room?t.top-16:c.top-16);
+  scrollTo({top:Math.max(0,top),behavior:reduced?'auto':'smooth'});
 }
+function closeCallout(){openId=null;$('#callout').hidden=true;$$('.stage').forEach(g=>g.setAttribute('aria-expanded','false'));}
 $$('.stage').forEach(g=>{
   g.addEventListener('click',()=>openStage(g.dataset.stage));
   g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();openStage(g.dataset.stage);}});
 });
 $('#co-close').addEventListener('click',()=>{const id=openId;closeCallout();const g=$$('.stage[data-stage="'+id+'"]').find(x=>x.getBoundingClientRect().width>0);g&&g.focus();});
 addEventListener('keydown',ev=>{if(ev.key==='Escape'&&openId)closeCallout();});
-addEventListener('resize',placeLeader);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(placeLeader);
+
+/* what ran: one renderer for the saved run and the live run */
+const plural=(k,w)=>k+' '+w+(k===1?'':'s');
+function ranHTML(d){
+  const f=d.figures,c=d.counts,v=d.verifier;
+  const groups=[];d.flags.forEach(x=>{let g=groups.find(y=>y.reason===x.reason);if(!g){g={reason:x.reason,items:[]};groups.push(g);}g.items.push(x);});
+  const held=d.flags.length?'<div class="attn-box"><h4>'+plural(f.flagged,'figure')+' held back, not guessed</h4><ul>'+groups.map(g=>'<li>'+(g.items.length>1?'<b>'+plural(g.items.length,'figure')+'.</b> ':'<b>'+e(g.items[0].label)+'.</b> ')+e(g.reason)+'</li>').join('')+'</ul><p>Their values stay empty. Nothing is averaged or carried forward.</p></div>'
+    :'<div class="attn-box ok"><h4>Nothing held back</h4><p>Every figure passed its checks.</p></div>';
+  const states=[[c.computed,'finished fully'],[c.partial,'finished partly'],[c.blocked,'could not run']].filter(x=>x[0]);
+  const ana=c.computed===c.total?'All '+c.total+' analyses finished fully.':'Of '+c.total+' analyses, '+states.map(x=>x[0]+' '+x[1]).join(', ').replace(/, ([^,]*)$/,' and $1')+'.';
+  const why=d.analyses.filter(a=>a.why).map(a=>'<li><b>'+e(a.name)+'</b> '+(a.status==='blocked'?'could not run':'finished partly')+' because '+e(a.why)+'.</li>').join('');
+  const bad=v.problems.length;
+  return '<dl class="kv"><dt>Read</dt><dd><p>It read these '+d.read.files+' files.</p><div class="chips">'+d.file_labels.map(x=>'<span class="chip" title="'+e(x.file)+'">'+e(x.label)+'</span>').join('')+'</div></dd>'
+    +'<dt>Figures</dt><dd><p>It pulled '+f.total+' figures out of them. '+(f.flagged?f.usable+' passed its checks and '+f.flagged+' were held back.':'All '+f.total+' passed its checks.')+'</p></dd>'
+    +'<dt>Held back</dt><dd>'+held+'</dd></dl>'
+    +'<dl class="kv"><dt>Analyses</dt><dd><p>'+ana+'</p>'+(why?'<ul class="alist">'+why+'</ul>':'')+'</dd>'
+    +'<dt>Checked</dt><dd><p>A separate checker compared every number in the written summary with the computed figures. '+(v.ok?'All '+v.numbers_checked+' numbers matched, so the summary passed.':(bad===1?'1 number':bad+' numbers')+' did not match, so the summary was blocked.')+'</p></dd></dl>';
+}
+async function rows(){  // the panel's rows appear one after another, at the diagram's pace
+  if(reduced)return;
+  const rs=$$('#ran-body dt');rs.forEach(t=>{t.classList.add('wait');t.nextElementSibling.classList.add('wait');});
+  for(const t of rs){await new Promise(r=>setTimeout(r,150));t.classList.remove('wait');t.nextElementSibling.classList.remove('wait');}
+}
+function renderRan(){
+  const d=D(),on=!!live&&live.co===co;
+  $('#ran-h').textContent=on?'What the engine just did, in your browser':'What the engine did with these files';
+  $('#ran-body').innerHTML=ranHTML(d);
+  $('#ran-held').hidden=!d.flags.length;
+  $('#ran-open').href='reports/'+co+'.html';
+}
+$('#ran-held').addEventListener('click',()=>openStage('check',{force:true}));
 
 /* sheet 2 */
 const tri=n=>'<svg width="22" height="21" viewBox="0 0 22 21" aria-hidden="true"><path class="tri" d="M11 1.5L20.5 19.5H1.5Z"/><text x="11" y="16">'+n+'</text></svg>';
@@ -982,13 +1055,15 @@ function renderLic(){
   const dd=x=>'$'+Math.round(x).toLocaleString('en-US');
   $('#lic-asof').textContent='As of '+L.asof;
   $('#lic-rows').innerHTML=L.categories.map(c=>{
-    const f=c.findings,src=f.length?f[0].sources.join('; ')+(f.length>1?' and '+(f.length-1)+' more':''):'';
+    const f=c.findings;
     const nocost=f.filter(x=>x.cost===null).length;
-    const money=c.id==='unresolvable'?'not counted':c.monthly===0?'none':dd(c.monthly)+(nocost?' ('+nocost+' not counted)':'');
-    return '<tr><td><b>'+e(c.title)+'</b></td><td class="n" data-label="Seats">'+c.count+'</td><td class="n" data-label="Monthly" style="white-space:normal">'+e(money)+'</td><td data-label="Action">'+e(c.action)+'</td><td class="s">'+e(src)+'</td></tr>';}).join('');
+    const money=c.id==='unresolvable'?'not counted':c.monthly===0?'none':dd(c.monthly);
+    const note=c.id!=='unresolvable'&&c.monthly!==0&&nocost?' <small>('+nocost+' not counted)</small>':'';
+    return '<tr><td><b>'+e(c.title)+'</b></td><td class="n" data-label="Seats">'+c.count+'</td><td class="n" data-label="Monthly" style="white-space:normal">'+e(money)+note+'</td><td data-label="Action">'+e(c.action)+'</td></tr>';}).join('');
   const nocostAll=L.categories.reduce((a,c)=>a+c.findings.filter(x=>x.cost===null).length,0);
   $('#lic-save').innerHTML='Not counted: '+unres+' seat that matches no employee and '+nocostAll+' seat with no cost on file. Both are in the action list, not in the total.';
-  $('#lic-summary').innerHTML=tag(L.summary);
+  $('#lic-summary').textContent=L.summary.replace(/ ?\[\w+\]/g,'');
+  $('#lic-srclog').textContent=L.categories.filter(c=>c.findings.length).map(c=>c.title+'\n'+c.findings.map(f=>'  '+f.email+' ('+f.tool+'): '+f.sources.join('; ')).join('\n')).join('\n\n');
   $('#lic-text').textContent=L.seats+' seats read from '+L.files+' files. '+unres+' matches no employee and is held. '+flagged+' seats flagged across five categories. Verifier: '+(L.verifier.ok?'pass':'fail')+'.';
   $('#lic-v').innerHTML=vbus([
     {kind:'src',name:'SOURCES',n:L.files,l:'FILES'},{name:'MATCH',n:L.seats-unres,l:'OF '+L.seats+' MATCHED'},
@@ -996,34 +1071,115 @@ function renderLic(){
     {kind:'list',name:'CLASSIFY',n:flagged,l:'SEATS FLAGGED'},{kind:'breaker',name:'VERIFY',n:L.verifier.ok?'PASS':'FAIL',l:L.verifier.numbers_checked+' NUMBERS CHECKED'},
     {kind:'load',name:'ACTION LIST',n:L.actions,l:'ACTIONS'}],{label:'One-line diagram of the AI license and access reconciler, drawn vertically.'});
 }
-function renderEng(){
-  const G=DATA.engineering;
-  $('#eng-trace').innerHTML=G.trace.map(t=>'<li><div><span class="st">'+e(t.stage)+'</span><span class="fl">'+e(t.file)+'</span><p>'+e(t.text)+'</p></div></li>').join('');
-  $('#eng-key').textContent='pnl.gross_profit.2025-05';
-  $('#eng-facts').innerHTML='<dt>Stack</dt><dd>Python, with every dependency pinned in requirements.txt.</dd><dt>Site</dt><dd>One static HTML file. The data in it is written by scripts/make_site.py.</dd><dt>Tests</dt><dd>'+G.tests+' tests: each stage, each seeded problem, regression tests for bugs found in review, and property tests for the verifier and the number parser. The gate also checks that this site and every report match a fresh run.</dd><dt>Failure</dt><dd>A bad figure becomes None with a named reason. A bad file is logged and skipped. A zero denominator is not computed. Nothing raises on bad data.</dd>';
-  $('#eng-v').innerHTML=vbus([{kind:'src',name:'SHEET',caps:['read.py']},{kind:'list',name:'LEDGER',caps:['model.py']},{kind:'list',name:'RESULT',caps:['analyses.py']},{kind:'breaker',name:'VERDICT',caps:['verify.py']}],{label:'The data model drawn vertically: Sheet, Ledger, Result, Verdict.'});
-}
 function renderPlat(){
   const c=DATA.scenarios.messy.counts;
   $('#plat-v').innerHTML=vbus([
     {kind:'src',name:'CLIENT FILES',caps:['xlsx, csv, pdf','synthetic here']},{name:'INGESTION',caps:['read, normalize, extract','figures keep their source']},
     {kind:'breaker',name:'CHECKS',caps:['flag, do not guess',DATA.scenarios.messy.figures.flagged+' held (messy)']},
-    {kind:'ghost',ghost:1,name:'COMPANY DATABASE',caps:['one write path','not rebuilt here']},
+    {kind:'ghost',ghost:1,name:'COMPANY DATABASE',caps:['not rebuilt here']},
     {kind:'list',name:'46 ANALYSES',caps:[c.total+' of 46 here','simplified'],bubble:1},{kind:'breaker',name:'RELEASE GATE',caps:[DATA.tests+' tests here','a fail blocks release'],bubble:2},
     {kind:'load',name:'REPORT',caps:['AI draft, then','a separate check'],bubble:3}],
     {label:'One-line diagram of the full platform, drawn vertically. The first three nodes and the next three are inside the dashed THIS REPO boundaries.',bounds:[[0,2],[4,6]],dim:'FULL REPORT: 1 TO 2 WEEKS, THEN ABOUT 3 DAYS'});
 }
 function setCo(next,first){
-  co=next;
+  co=next;live=null;say('','Saved run');$('#run-raw').hidden=true;$('#run-raw').open=false;
   $$('#switch button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.co===co));
   $('#switch').dataset.co=co;
   renderDiagram(first);renderGrid();
-  if(openId){const id=openId;openId=null;openStage(id);}
+  if(openId){const id=openId;openId=null;openStage(id,{auto:true});}
 }
 $$('#switch button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.co!==co)setCo(b.dataset.co,false);}));
-renderRejection();setCo(co,true);renderLic();renderPlat();renderEng();
+
+/* run it live: the real engine in Pyodide, drawn into the diagram above */
+const V='314.0.7',BASE='https://cdn.jsdelivr.net/pyodide/v'+V+'/full/';
+const SRI='sha384-hYKrcQ7FiKU7f1c92md9N2eh7BoBVX4CPkNDfQyyVclsjZevvDOBUkajGcYk1EF8';
+const FOLDERS={messy:['data/sample','outputs/sample'],clean:['data/clean','outputs/clean']};
+const WHEELS=['et_xmlfile-2.0.0-py3-none-any.whl','openpyxl-3.1.5-py2.py3-none-any.whl','pypdf-7.0.0-py3-none-any.whl'];
+const GLUE=`
+import contextlib, io, json, os, sys
+os.environ.pop("ANTHROPIC_API_KEY", None)
+os.chdir("/app"); sys.path.insert(0, "/app")
+from engine import sitedata
+FOLDERS = ${JSON.stringify(FOLDERS)}
+COMMITTED = {k: open(out + "/figures.csv").read() for k, (_, out) in FOLDERS.items()}  # read before any run; runs write to /tmp, never here
+def go(company):
+    import run
+    folder, _ = FOLDERS[company]
+    out = "/tmp/" + company
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        run.analyze(folder, out)
+    data = sitedata.one(folder, "/app")
+    data.pop("_report_html")
+    return json.dumps({"log": buf.getvalue(), "data": data, "csv": open(out + "/figures.csv").read() == COMMITTED[company]})
+`;
+const btn=$('#run-live'),stamp=$('#run-stamp');
+let boot=null,busy=false;
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const say=(cls,text)=>{stamp.innerHTML='<span class="chip tag '+cls+'">'+e(text)+'</span>';};
+const label=t=>{btn.textContent=t;};
+function setBusy(b){busy=b;btn.disabled=b;$('#ran').classList.toggle('busy',b);$$('#switch button').forEach(x=>x.disabled=b);}
+function script(src){return new Promise((ok,no)=>{const t=document.createElement('script');t.src=src;t.integrity=SRI;t.crossOrigin='anonymous';t.onload=ok;t.onerror=()=>no(new Error('could not download Pyodide from cdn.jsdelivr.net'));document.head.appendChild(t)})}
+function start(){
+  return boot||(boot=(async()=>{
+    label('Loading Python for the browser');
+    await script(BASE+'pyodide.js');
+    const py=await loadPyodide({indexURL:BASE});
+    await py.loadPackage(['pandas','numpy','micropip']);
+    await py.pyimport('micropip').install(WHEELS.map(w=>new URL('wheels/'+w,location.href).href),{deps:false});
+    py.unpackArchive(await (await fetch('engine-bundle.zip')).arrayBuffer(),'zip',{extractDir:'/app'});
+    py.runPython(GLUE);
+    return py;
+  })().catch(x=>{boot=null;throw x}));
+}
+function blank(){
+  const w=$('#dwrap');
+  w.classList.remove('is-messy','is-clean');w.classList.add('is-blank');
+  $$('[data-live]').forEach(l=>l.classList.remove('on'));
+  $$('.trip-glyph').forEach(g=>g.classList.remove('kick'));
+  $$('#dwrap .node[data-state],#dwrap .xmark[data-state]').forEach(el=>{if(!el.dataset.was)el.dataset.was=el.dataset.state;el.dataset.state='idle';});
+  $$('[data-mini]').forEach(el=>{el.dataset.state='idle';});
+  $$('#dwrap [data-b]').forEach(el=>{const n=el.dataset.b.endsWith('.n');el.textContent=n?'...':'';el.classList.toggle('wait',n);});
+  $$('#sheet-1 .vstat').forEach(el=>{el.textContent='...';el.className='vstat';});
+}
+async function reveal(d){
+  const step=reduced?0:200;
+  for(let i=0;i<GROUPS.length;i++){
+    paint(GROUPS[i],d);
+    if(i>0)$$('[data-live="'+(i-1)+'"]').forEach(l=>l.classList.add('on'));
+    if(GROUPS[i]==='check'&&d.figures.flagged&&!reduced)$$('.trip-glyph').forEach(g=>{g.classList.add('kick');});
+    if(step)await new Promise(r=>setTimeout(r,step));
+  }
+}
+async function runLive(){
+  if(busy)return;
+  const c=co;
+  setBusy(true);say('','Running live');$('#run-raw').hidden=true;blank();
+  const fail=(msg,detail)=>{
+    live=null;renderDiagram(true);say('partial',msg);
+    if(detail){$('#run-log').textContent=detail;$('#run-raw').hidden=false;}
+  };
+  try{
+    let py;
+    try{py=await start();}catch(x){fail('Python for the browser could not load. The numbers shown are from the saved run.');return;}
+    label('Running');
+    await new Promise(r=>setTimeout(r,30));
+    let r;
+    try{r=JSON.parse(py.globals.get('go')(c));}catch(x){fail('The live run stopped with an error. The numbers shown are from the saved run.',String(x&&x.message||x));return;}
+    live={co:c,data:r.data};
+    await reveal(r.data);
+    $('#dtext').textContent=summaryLine(r.data);
+    $('#ran').classList.remove('busy');renderRan();await rows();
+    $('#run-log').textContent=r.log;$('#run-raw').hidden=false;
+    const ok=same(r.data,DATA.scenarios[c])&&r.csv;
+    say(ok?'on':'partial','Ran live in your browser just now. '+(ok?'Same result as the saved run.':'Different from the saved run.'));
+    if(openId)openStage(openId,{force:true,auto:true});  // an open stage is redrawn from the live run; none opens by itself
+  }finally{label('Run it live');setBusy(false);}
+}
+btn.addEventListener('click',runLive);
+renderRejection();setCo(co,true);renderLic();renderPlat();
 matchMedia('(max-width:600px)').addEventListener('change',()=>renderGrid());matchMedia('(max-width:1100px)').addEventListener('change',()=>renderGrid());
-{const AL={verify:'ver',normalize:'norm',extract:'ext',analyze:'ana',report:'rep'},o=AL[q.get('open')]||q.get('open');if(STAGES[o])openStage(o);}
+{const AL={verify:'ver',normalize:'norm',extract:'ext',analyze:'ana',report:'rep'},o=AL[q.get('open')]||q.get('open');if(STAGES[o])openStage(o,{auto:true});}
 })();
 </script>
 </body>

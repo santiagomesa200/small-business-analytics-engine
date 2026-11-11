@@ -24,7 +24,11 @@ Live site: https://santiagomesa200.github.io/small-business-analytics-engine/
 
 ## Run it
 
-Needs Python 3.12 or newer. One command sets up a virtual environment from the pinned `requirements-dev.txt` (which includes `requirements.txt`) and runs the whole check:
+**In your browser, nothing to install:** open [the live site](https://santiagomesa200.github.io/small-business-analytics-engine/#sheet-1) and press "Run it live" beside the Messy / Clean switch. The real engine runs on the sample files in your browser and nothing is uploaded. The diagram refills with that run's numbers, the panel under it says in plain sentences what the engine read, held back and checked, and a tag says whether the run matches the saved one. Click any stage of the diagram to see its details.
+
+The browser runs Pyodide 314.0.7 (Python 3.14, pandas 3.0.2, numpy 2.4.6, python-dateutil 2.9.0.post0) instead of the exact versions in `requirements.txt`; openpyxl and pypdf are the pinned ones, served from `docs/wheels/`, and the figures.csv it writes is identical to the committed one (the page checks this on every run).
+
+**On your machine:** needs Python 3.12 or newer. One command sets up a virtual environment from the pinned `requirements-dev.txt` (which includes `requirements.txt`) and runs the whole check:
 
 ```
 make check                                 # venv, pinned install, lint, types, security, tests, gate
@@ -37,7 +41,7 @@ python3 -m venv .venv && . .venv/bin/activate   # later commands in this README 
 pip install -r requirements-dev.txt        # exact versions, Python 3.12+; includes requirements.txt
 python scripts/make_sample_data.py         # writes synthetic inputs to data/sample/
 python run.py data/sample                  # writes outputs/sample/report.md, report.html, figures.csv
-python -m engine.gate                      # 110 tests plus contract checks; non-zero exit on any failure
+python -m engine.gate                      # 128 tests plus contract checks; non-zero exit on any failure
 ```
 
 `make check` runs ruff (lint and format), mypy on `engine/`, bandit, pip-audit on the pinned requirements, gitleaks when installed (CI scans the full git history), and the gate: the tests with a 90% coverage floor, hypothesis property tests for the verifier and the number parser, and the contract checks. CI runs the same on every push. The gate always uses the offline template drafter, never a model.
@@ -64,10 +68,6 @@ Ledger (engine/model.py)  each figure is a value, or None with a named reason
 
 Analyses: gross margin trend, price vs volume effect on revenue, working capital (DSO, DPO, DIO), cash runway, and a valuation range from an EBITDA multiple with the assumptions written out.
 
-**Data model.** `Sheet` (plain rows from one file) -> `Ledger` (every figure is a value or `None`, with a source cell and a named reason when `None`) -> `Result` (metrics with units and a status) -> `Verdict` on the summary.
-
-**One figure, traced.** May gross profit sits in `pnl_2025_h1.xlsx`, Monthly P&L, cell E6. `normalize.py` reads it as a number, `extract.py` puts it in the ledger with that source, `checks.py` finds revenue minus cost of goods is 159,519 not 168,519 and sets it to `None`, `analyses.py` marks that month not computed (the analysis is partial), the template says so in one sentence, and `verify.py` checks that sentence. Sheet 6 of the site draws this from a real run.
-
 ## Repo layout
 
 | Path | What is in it |
@@ -78,7 +78,7 @@ Analyses: gross margin trend, price vs volume effect on revenue, working capital
 | `scripts/` | Generators for the synthetic inputs, the rejected-summary example, the before/after image and the site |
 | `data/` | Synthetic inputs: `sample/` (three planted problems), `clean/` (same company, no problems), `licenses/` (seat exports, roster, usage log, approvals) |
 | `outputs/` | Committed results of those runs; the gate fails if a fresh run differs |
-| `docs/` | GitHub Pages site (`index.html`, `site-data.json`, `reports/`, `fonts/`), the case study, images, and one real AI draft with its verdict |
+| `docs/` | GitHub Pages site (`index.html`, `site-data.json`, `reports/`, `fonts/`, `engine-bundle.zip`, the engine and sample files the Run it buttons use), the case study, images, and one real AI draft with its verdict |
 | `Makefile`, `.github/workflows/gate.yml` | `make check` locally; CI runs the same steps on every push |
 | `requirements*.txt` | Pinned runtime, dev (tests and checks), and the optional Claude client |
 | `ruff.toml`, `mypy.ini`, `bandit.yaml`, `.coveragerc` | Lint, type, security and coverage settings |
@@ -175,6 +175,8 @@ Run log: 83 seats, 21 flagged (6 terminated holders, 1 duplicate, 10 unused, 3 u
 
 ## For engineers
 
+- **Data model:** `Sheet` (plain rows from one file) -> `Ledger` (every figure is a value or `None`, with a source cell and a named reason when `None`) -> `Result` (metrics with units and a status) -> `Verdict` on the summary.
+- **One figure, traced:** May gross profit sits in `pnl_2025_h1.xlsx`, Monthly P&L, cell E6, as 168,519. `read.py` returns the cell as is. `normalize.py` reads it as a number. `extract.py` puts it in the ledger with that source. `checks.py` finds that revenue minus cost of goods is 159,519, not 168,519, and sets the value to `None`. `analyses.py` marks that month not computed, so the analysis is partial. `summarize.py` writes one sentence that says so, `verify.py` checks that sentence, and `report.py` lists the figure under Needs attention.
 - **Stack:** Python 3.12+, pandas, openpyxl, pypdf, all pinned in `requirements.txt` (pytest and the other checks in `requirements-dev.txt`). The site is one static HTML file whose data is written by `scripts/make_site.py`.
 - **Tests:** each stage, each seeded problem, regression tests for bugs found in review, filed with the behavior they cover, and the contract gate (`engine/gate.py`), which also fails if the site data or any committed report or CSV differs from a fresh offline run.
 - **Failure behavior:** bad figures become `None` with a reason; a file with a missing column, no rows or unreadable content is logged and skipped; zero denominators and non-finite numbers are not computed; a figure that appears twice is flagged, not overwritten. License mode does the same for a missing, unreadable or headerless input file. Neither mode raises on bad data.
@@ -187,7 +189,7 @@ Run log: 83 seats, 21 flagged (6 terminated holders, 1 duplicate, 10 unused, 3 u
 
 ## Part of a bigger system
 
-This repo rebuilds one slice of a platform I built at StepUp & Company, a three-person advisory firm I co-founded (January 2025 – November 2026). The real platform is proprietary, so nothing here is its code, screens or data. It is a from-scratch reconstruction with a fictional company, written so you can run it.
+This repo rebuilds one slice of a platform I built as Analytics & AI Lead at StepUp & Company, a three-person advisory firm (January 2025 – November 2026). The real platform is proprietary, so nothing here is its code, screens or data. It is a from-scratch reconstruction with a fictional company, written so you can run it.
 
 ```
 Full platform at StepUp                                        This repo
@@ -198,7 +200,7 @@ Client spreadsheets and PDFs                                    yes, synthetic
   -> Company database with one controlled write path            no
   -> 46 analyses (quality of earnings, working                   5, simplified
      capital, pricing, valuation, forecasting, ...)
-  -> Release gate: 495 database tests and a                     110 tests and a gate
+  -> Release gate: 495 database tests and a                     128 tests and a gate
      1,198-check correctness gate that blocks a bad release
   -> Report, with an AI draft checked by a second model         yes, but the checker is fixed-rule code, not a model
 ```

@@ -4,243 +4,29 @@ and docs/reports/ (the HTML reports and the actions CSV). `python scripts/make_s
 from __future__ import annotations
 
 import difflib
+import io
 import json
 import re
 import subprocess
 import sys
 import tempfile
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from engine import pipeline
+from engine import pipeline, sitedata
 from engine import verify as verify_mod
-from engine.analyses import fmt
-from engine.normalize import parse_month, to_number
-from engine.plain import dates_to_words, first_month, fix, metric_name, pretty, why
-from engine.read import read_folder
-from engine.report import FIX, attention
 from scripts.make_rejection_example import build as rejection_example
 
-LINES = {
-    "revenue": "Net sales",
-    "cogs": "Cost of goods sold",
-    "gross_profit": "Gross profit",
-    "opex": "Operating expenses",
-    "ebitda": "EBITDA",
-}
+one = lambda folder: sitedata.one(folder, ROOT)
+flag_rows = sitedata.flag_rows
 SCENARIOS = {"messy": ("data/sample", "outputs/sample"), "clean": ("data/clean", "outputs/clean")}
 INDEX = ROOT / "docs/index.html"
 DATA = ROOT / "docs/site-data.json"
+BUNDLE = ROOT / "docs/engine-bundle.zip"
 MARK = re.compile(r"(<!--SITE-DATA-->).*?(<!--/SITE-DATA-->)", re.S)
-
-
-def causes(x, say=why) -> str:
-    """Every distinct root cause of an analysis (or its fix, with say=fix), joined with 'and' (not the knock-on 'needs DSO' ones)."""
-    found = [say(m.reason) for m in x.metrics if m.reason and "needs DSO" not in m.reason and "at least one month" not in m.reason]
-    return " and ".join(dict.fromkeys(found)) or (say(x.reason) if x.reason else "")
-
-
-def col_index(letters: str) -> int:
-    n = 0
-    for ch in letters:
-        n = n * 26 + ord(ch) - 64
-    return n - 1
-
-
-def flag_rows(ledger, results) -> list[dict]:
-    out = []
-    for i in ledger.issues:
-        fig = ledger.figs.get(i.key)  # issues about a whole file are keyed by its name, not by a figure
-        month = first_month(i.key) or ""
-        blocked = []
-        for r in results:
-            if r.blocked and i.key in r.blocked:
-                blocked.append(r.title[0].lower() + r.title[1:])
-            blocked += [metric_name(m.label) for m in r.metrics if m.reason and i.key in m.reason]
-        line = i.key.split(".")[1] if fig else ""
-        label = f"{LINES.get(line, line)}, {month}" if fig else i.key
-        if fig is None:
-            reason, cell, action = dates_to_words(i.message) + ".", i.key, FIX.get(i.kind, fix(""))
-        elif i.kind == "missing_period":
-            reason, cell, action = (
-                f"{month}'s column is missing from the Monthly P&L.",
-                f"Monthly P&L, {month} column (absent)",
-                f"send the {month} column",
-            )
-        else:
-            m = re.match(r"(.+?) \d{4}-\d{2}: file says ([\d,]+) but its parts give ([\d,]+)", i.message)
-            reason = f"The file says ${m.group(2)}; its parts add up to ${m.group(3)}." if m else dates_to_words(i.message) + "."
-            cell, action = fig.source.split(" | ")[-1], FIX.get(i.kind, fix("parts give"))
-        out.append(
-            dict(figure=i.key, label=label, kind=i.kind, cell=cell, reason=reason, unblocks=list(dict.fromkeys(blocked)), fix=action)
-        )
-    return out
-
-
-def grid(sheets, ledger) -> dict:
-    sh = next(s for s in sheets if s.name == "Monthly P&L")
-    flagged = {i.key: ledger.figs[i.key].source.split(" | ")[-1] for i in ledger.issues if i.kind == "subtotal_mismatch"}
-    cells_flagged = set(flagged.values())
-    missing = [first_month(i.key) for i in ledger.issues if i.kind == "missing_period"]
-    head = sh.rows[2]
-    months = [parse_month(c) for c in head]
-    rows, gap_at = [], None
-    if missing:  # place the absent month after the last month before it
-        want = next(i.key for i in ledger.issues if i.kind == "missing_period")[-7:]
-        gap_at = max(i for i, m in enumerate(months) if m and m < want) + 1
-    for r_i, row in enumerate(sh.rows[2:], start=2):
-        cells = []
-        for c_i, v in enumerate(row):
-            addr = f"{chr(65 + c_i)}{r_i + 1}"
-            text = f"{v:,}" if isinstance(v, (int, float)) else str(v)
-            kind = "trip" if addr in cells_flagged else ("fixed" if isinstance(v, str) and to_number(v) is not None else "")
-            cells.append(dict(t=text, k=kind, a=addr))
-        if gap_at is not None:
-            cells.insert(gap_at, dict(t="" if r_i > 2 else f"{missing[0][:3]}-25", k="absent", a=""))
-        rows.append(cells)
-    return dict(title=sh.rows[0][0], rows=rows, gap_at=gap_at)
-
-
-def stage_numbers(sheets) -> dict:
-    texty = sum(
-        1
-        for s in sheets
-        if not s.file.endswith(".pdf")
-        for r in s.rows
-        for v in r
-        if isinstance(v, str) and to_number(v) is not None and any(ch in v for ch in "($,")
-    )
-    return dict(
-        files=len({s.file for s in sheets}),
-        sheets=len(sheets),
-        rows=sum(len(s.rows) for s in sheets),
-        text_numbers=texty,
-        thousands_sheets=sum(
-            1 for s in sheets if re.search(r"in thousands|\$000|\(000", " ".join(str(c) for c in (s.rows[0] if s.rows else []) if c), re.I)
-        ),
-    )
-
-
-def one(folder: str) -> dict:
-    sheets = read_folder(ROOT / folder)
-    with tempfile.TemporaryDirectory() as d:
-        r = pipeline.run(ROOT / folder, d, offline=True)
-        report_html = (Path(d) / "report.html").read_text()
-    ledger, results, verdict = r["ledger"], r["results"], r["verdict"]
-    n_ok = sum(f.value is not None for f in ledger.figs.values())
-    count = lambda s: sum(x.status == s for x in results)
-    summary = r["summary"]
-    return dict(
-        folder=folder,
-        files=r["files"],
-        read=stage_numbers(sheets),
-        figures=dict(total=len(ledger.figs), usable=n_ok, flagged=len(ledger.figs) - n_ok),
-        flags=flag_rows(ledger, results),
-        grid=grid(sheets, ledger),
-        attention=[dict(text=t, figures=k) for t, k in attention(ledger, results)],
-        counts=dict(computed=count("computed"), partial=count("partial"), blocked=count("blocked"), total=len(results)),
-        analyses=[
-            dict(
-                id=x.id,
-                title=x.title,
-                status=x.status,
-                why=causes(x),
-                fix=causes(x, fix),
-                metrics=[
-                    dict(
-                        label=pretty(m.label),
-                        value=fmt(m) if m.value is not None else None,
-                        why=why(m.reason) if m.reason else "",
-                        source=m.source,
-                    )
-                    for m in x.metrics
-                ],
-                assumptions=x.assumptions,
-            )
-            for x in results
-        ],
-        summary=summary,
-        drafter=r["drafter"],
-        verifier=dict(
-            ok=verdict.ok,
-            problems=verdict.problems,
-            sentences=len(re.split(r"(?<=[.!?])\s+", summary.strip().replace(". [", " ["))),
-            numbers_checked=sum(len(verify_mod.numbers(s)) for s in re.split(r"(?<=[.!?])\s+", summary)),
-        ),
-        report=dict(
-            strip=[
-                ("figures read", str(len(ledger.figs))),
-                ("need attention", str(len(attention(ledger, results)))),
-                ("analyses fully computed", f"{count('computed')} of {len(results)}"),
-                ("verifier", "PASS" if verdict.ok else "FAIL"),
-            ]
-        ),
-        trace=trace(sheets, ledger, results, summary, verdict),
-        _report_html=report_html,
-    )
-
-
-def trace(sheets, ledger, results, summary, verdict) -> list[dict] | None:
-    """One real figure followed from its cell to the verifier, for the engineers' sheet. Every value comes from the run."""
-    key = next((i.key for i in ledger.issues if i.kind == "subtotal_mismatch"), None)
-    if key is None:
-        return None
-    _, line, month = key.split(".")
-    fig, issue = ledger.figs[key], next(i for i in ledger.issues if i.key == key)
-    cell_of = lambda k: ledger.figs[k].source.split(" | ")[-1]
-    sheet = next(sh for sh in sheets if sh.name == fig.source.split(" | ")[1])
-    raw = lambda k: sheet.rows[int(re.sub(r"\D", "", cell_of(k))) - 1][col_index(re.sub(r"\d", "", cell_of(k)))]
-    rev, cogs = f"pnl.revenue.{month}", f"pnl.cogs.{month}"
-    gm = next(r for r in results if r.id == "gross_margin")
-    metric = next(m for m in gm.metrics if m.label.endswith(month))
-    sentence = next(x for x in re.split(r"(?<=[.!?])\s+", summary.replace(". [", " [")) if "[gross_margin]" in x)
-    matched = []
-    for value, dec, unit in verify_mod.scan(sentence):
-        label = next((m.label for m in gm.metrics if m.value is not None and fmt(m).startswith(f"{value:.{dec}f}")), "")
-        matched.append(f"{value:.{dec}f}{unit or ''} = {pretty(label)}")
-    d = lambda v: f"{v:,.0f}"
-    month_name = first_month(key)
-    attn = next(t for t, k in attention(ledger, results) if key in k)
-    return [
-        dict(
-            stage="READ",
-            file="engine/read.py",
-            text=f"{fig.source.split(' | ')[0]}, sheet {sheet.name}, cell {cell_of(key)} holds {raw(key)!r}. Nothing is interpreted yet.",
-        ),
-        dict(
-            stage="NORMALIZE",
-            file="engine/normalize.py",
-            text=f"{raw(key)!r} becomes the number {d(fig.reported)}. The neighboring cost cell {raw(cogs)!r} becomes {d(ledger.figs[cogs].value)}, stored as a positive amount.",
-        ),
-        dict(
-            stage="EXTRACT",
-            file="engine/extract.py",
-            text=f"Ledger key {key} gets the value {d(fig.reported)} and the source {fig.source}.",
-        ),
-        dict(
-            stage="CHECK",
-            file="engine/checks.py",
-            text=f"{month_name} revenue {d(ledger.figs[rev].value)} minus cost of goods {d(ledger.figs[cogs].value)} is {d(ledger.figs[rev].value - ledger.figs[cogs].value)}, but the file says {d(fig.reported)}. The ledger value becomes None, the reported {d(fig.reported)} is kept for the audit trail, and an issue is logged: {dates_to_words(issue.message)}.",
-        ),
-        dict(
-            stage="ANALYZE",
-            file="engine/analyses.py",
-            text=f"{pretty(metric.label)} is not computed ({why(metric.reason)}). The other months still compute, so the analysis status is {gm.status}.",
-        ),
-        dict(stage="DRAFT", file="engine/summarize.py", text=f"The template writes: {sentence}"),
-        dict(
-            stage="VERIFY",
-            file="engine/verify.py",
-            text=f"The sentence cites [gross_margin]. Its numbers match computed figures with the same unit ({'; '.join(matched)}), and {month_name} is described as not computed. Verdict: {'PASS' if verdict.ok else 'FAIL'}.",
-        ),
-        dict(
-            stage="REPORT",
-            file="engine/report.py",
-            text=f"Needs attention: {attn} The row in figures.csv has an empty value and the reason.",
-        ),
-    ]
 
 
 def rejection(good: str) -> dict:
@@ -316,7 +102,6 @@ def build_data() -> tuple[dict, dict]:
         rejection=rejection(sc["messy"]["summary"]),
         licenses=licenses_data(),
         tests=n,
-        engineering=dict(trace=sc["messy"]["trace"], tests=n),
     ), reports
 
 
@@ -368,6 +153,55 @@ DOCS_COPIES = {
 }
 
 
+def bundle_files() -> dict[str, bytes]:
+    """What the in-browser "Run it" button runs: the engine, run.py, the sample inputs and the committed figures.csv to compare with."""
+    paths = [ROOT / "run.py", *sorted((ROOT / "engine").glob("*.py")), ROOT / "engine/report.css"]
+    paths = [p for p in paths if p.name != "gate.py"]  # the release gate runs pytest in a subprocess; the browser never needs it
+    for folder, out in SCENARIOS.values():
+        paths += sorted(p for p in (ROOT / folder).iterdir() if p.is_file()) + [ROOT / out / "figures.csv"]
+    return {p.relative_to(ROOT).as_posix(): p.read_bytes() for p in paths}
+
+
+def bundle_zip() -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, data in bundle_files().items():
+            z.writestr(zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0)), data, zipfile.ZIP_DEFLATED)
+    return buf.getvalue()
+
+
+WHEELS = [
+    "et_xmlfile",
+    "openpyxl",
+    "pypdf",
+]  # pure-Python wheels the browser installs from docs/wheels/, versions pinned in requirements.txt
+
+
+def wheel_problems(root: Path = ROOT) -> list[str]:
+    pins = dict(re.findall(r"^([A-Za-z_.-]+)==(\S+)", (ROOT / "requirements.txt").read_text(), re.M))
+    out = []
+    for name in WHEELS:
+        have = sorted((root / "docs/wheels").glob(f"{name}-*.whl"))
+        want = pins[name]
+        if [w.name.split("-")[1] for w in have] != [want] or not have[0].name.endswith("-none-any.whl"):
+            out.append(f"docs/wheels must hold exactly the pure-Python {name}-{want} wheel (requirements.txt pin)")
+    return out
+
+
+def bundle_problems(path: Path) -> list[str]:
+    """Problems if the zip on disk holds different files, or different bytes, than the repo's own sources (compared by content, not zip bytes)."""
+    if not path.exists():
+        return ["docs/engine-bundle.zip is missing (run python scripts/make_site.py)"]
+    with zipfile.ZipFile(path) as z:
+        have = {n: z.read(n) for n in z.namelist()}
+    want = bundle_files()
+    return [
+        f"docs/engine-bundle.zip: {n} does not match the repo (run python scripts/make_site.py)"
+        for n in sorted(set(have) | set(want))
+        if have.get(n) != want.get(n)
+    ]
+
+
 def check(root: Path = ROOT) -> list[str]:
     """Problems if any committed page data, report or CSV differs from a fresh offline run of the engine."""
     fresh = json.loads(json.dumps(build_data()[0]))  # tuples become lists, as in the file
@@ -378,6 +212,7 @@ def check(root: Path = ROOT) -> list[str]:
     m = re.search(r'<script id="site-data" type="application/json">(.*?)</script>', index.read_text(), re.S)
     if not m or json.loads(m.group(1).replace("<\\/", "</")) != fresh:
         fails.append("docs/index.html carries data that does not match a fresh engine run")
+    fails += bundle_problems(root / "docs/engine-bundle.zip") + wheel_problems(root)
     fails += [
         f"{n} has a different test count than the gate (run python scripts/make_site.py)"
         for n in sync_counts(fresh["tests"], write=False, root=root)
@@ -407,9 +242,10 @@ def main() -> None:
         text = (ROOT / src).read_text()
         (ROOT / "docs/reports" / dst).write_text(FONT_URL.sub("url(../fonts/", text) if dst.endswith(".html") else text)
     sync_counts(data["tests"])
+    BUNDLE.write_bytes(bundle_zip())
     DATA.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
     INDEX.write_text(inline(data, INDEX.read_text()))
-    print("wrote docs/site-data.json, docs/index.html (data inlined), docs/reports/{messy,clean}.html")
+    print("wrote docs/site-data.json, docs/index.html (data inlined), docs/reports/{messy,clean}.html, docs/engine-bundle.zip")
 
 
 if __name__ == "__main__":
